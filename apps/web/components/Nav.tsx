@@ -28,28 +28,29 @@ export default function Nav() {
     : [["/", "Assortiment"], ["/snelbestellen", "Snelbestellen"], ["/orders", "Mijn orders"]];
 
   return (
-    <header className="border-b border-stone-200 bg-white">
+    <header className="border-b border-wt-sand bg-wt-cream">
       <div className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
-        <Link href={isStaff ? "/beheer" : "/"} className="text-lg font-semibold tracking-tight">WicoTreats <span className="text-amber-700">{isStaff ? "Beheer" : "B2B"}</span></Link>
+        <Link href={isStaff ? "/beheer" : "/"} className="font-display text-2xl font-extrabold tracking-tight text-wt-brown">WicoTreats <span className="text-wt-rust">{isStaff ? "Beheer" : "B2B"}</span></Link>
         {!publicPage && (
           <nav className="flex gap-4 text-sm">
             {links.map(([href, label]) => (
-              <Link key={href} href={href} className={path === href ? "font-medium text-amber-800" : "text-stone-600 hover:text-stone-900"}>{label}</Link>
+              <Link key={href} href={href} className={path === href ? "font-medium text-wt-rust" : "text-wt-muted hover:text-wt-brown"}>{label}</Link>
             ))}
           </nav>
         )}
         <div className="ml-auto flex items-center gap-4 text-sm">
           {!publicPage && !isStaff && (
-            <Link href="/winkelwagen" className="rounded-full bg-amber-700 px-3 py-1.5 font-medium text-white hover:bg-amber-800">Winkelwagen ({count})</Link>
+            <Link href="/winkelwagen" className="rounded-sm bg-wt-brown px-3 py-1.5 font-medium text-white hover:bg-wt-rust-dark">Winkelwagen ({count})</Link>
           )}
           {me && (
             <>
-              <span className="hidden text-stone-500 sm:inline">{me.company?.name ?? me.user.name}</span>
-              <button className="text-stone-600 hover:text-stone-900" onClick={async () => { await api("/auth/logout", { method: "POST" }); router.push("/login"); }}>Uitloggen</button>
+              <span className="hidden text-wt-muted sm:inline">{me.company?.name ?? me.user.name}</span>
+              <button className="text-wt-muted hover:text-wt-brown" onClick={async () => { await api("/auth/logout", { method: "POST" }); router.push("/login"); }}>Uitloggen</button>
             </>
           )}
         </div>
       </div>
+      <div className="wt-strip">{["#8b3a2a","#4a3933","#7a6a3e","#b86f4a","#c9a24a","#3e6a8a","#9a8a7a","#5a4a3a","#b08a5a","#6a7a5a"].map((c) => <i key={c} style={{ background: c }} />)}</div>
     </header>
   );
 }

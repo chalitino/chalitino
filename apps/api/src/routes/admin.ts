@@ -4,6 +4,10 @@ import { prisma } from "../lib/prisma.js";
 import { requireAdmin, requireStaff } from "../lib/auth.js";
 import { checkVies } from "../lib/vat.js";
 import { releaseAllocations, stockForVariants } from "../lib/stock.js";
+import { sendMail } from "../lib/mail.js";
+import { accountApproved, loadOrder, orderShipped } from "../emails/templates.js";
+import { ensureInvoiceNumber } from "../lib/invoice.js";
+import { factuurHtml, pakbonHtml } from "../lib/documents.js";
 
 const orderInclude = {
   company: { select: { id: true, name: true, email: true, phone: true, vatNumber: true, shipCountry: true } },
@@ -63,7 +67,25 @@ export async function staffRoutes(app: FastifyInstance) {
         return tx.order.update({ where: { id }, data, include: orderInclude });
       });
     }
-    return prisma.order.update({ where: { id }, data, include: orderInclude });
+    if (body.status === "SHIPPED" && order.status !== "SHIPPED") await ensureInvoiceNumber(id); // factuur bij verzending
+    const updated = await prisma.order.update({ where: { id }, data, include: orderInclude });
+    if (body.status === "SHIPPED" && order.status !== "SHIPPED") {
+      loadOrder(id).then(async (full) => sendMail(await orderShipped(full))).catch((e) => app.log.error({ err: e }, "verzendmail mislukt"));
+    }
+    return updated;
+  });
+
+  // Documenten in huisstijl (printbaar / opslaan als PDF).
+  app.get("/admin/orders/:id/pakbon", async (req, reply) => {
+    const { id } = z.object({ id: z.string() }).parse(req.params);
+    reply.type("text/html; charset=utf-8");
+    return pakbonHtml(await loadOrder(id));
+  });
+  app.get("/admin/orders/:id/factuur", async (req, reply) => {
+    const { id } = z.object({ id: z.string() }).parse(req.params);
+    await ensureInvoiceNumber(id);
+    reply.type("text/html; charset=utf-8");
+    return factuurHtml(await loadOrder(id));
   });
 
   // Voorraad per variant (som van batches) + batches met THT.
@@ -75,20 +97,20 @@ export async function staffRoutes(app: FastifyInstance) {
 
   // Batch inboeken (ontvangst productie/leverancier).
   app.post("/admin/batches", async (req, reply) => {
-    const body = z.object({ sku: z.string(), batchNumber: z.string().min(1), bestBefore: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), qty: z.number().int().positive(), note: z.string().optional() }).parse(req.body);
+    const body = z.object({ sku: z.string(), batchNumber: z.string().min(1), bestBefore: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), qty: z.number().int().positive(), analysis: z.string().optional(), note: z.string().optional() }).parse(req.body);
     const variant = await prisma.productVariant.findUnique({ where: { sku: body.sku.toUpperCase() } });
     if (!variant) return reply.code(404).send({ error: `Onbekende SKU ${body.sku}` });
     const existing = await prisma.batch.findUnique({ where: { variantId_batchNumber: { variantId: variant.id, batchNumber: body.batchNumber } } });
     const batch = existing
-      ? await prisma.batch.update({ where: { id: existing.id }, data: { qtyReceived: { increment: body.qty }, qtyRemaining: { increment: body.qty }, bestBefore: new Date(body.bestBefore) } })
-      : await prisma.batch.create({ data: { variantId: variant.id, batchNumber: body.batchNumber, bestBefore: new Date(body.bestBefore), qtyReceived: body.qty, qtyRemaining: body.qty, note: body.note } });
+      ? await prisma.batch.update({ where: { id: existing.id }, data: { qtyReceived: { increment: body.qty }, qtyRemaining: { increment: body.qty }, bestBefore: new Date(body.bestBefore), analysis: body.analysis ?? undefined } })
+      : await prisma.batch.create({ data: { variantId: variant.id, batchNumber: body.batchNumber, bestBefore: new Date(body.bestBefore), qtyReceived: body.qty, qtyRemaining: body.qty, analysis: body.analysis, note: body.note } });
     return reply.code(201).send(batch);
   });
 
   // Voorraadcorrectie op een batch (telling, breuk, afgekeurd).
   app.patch("/admin/batches/:id", async (req) => {
     const { id } = z.object({ id: z.string() }).parse(req.params);
-    const body = z.object({ qtyRemaining: z.number().int().min(0).optional(), bestBefore: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(), note: z.string().nullable().optional() }).parse(req.body);
+    const body = z.object({ qtyRemaining: z.number().int().min(0).optional(), bestBefore: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(), analysis: z.string().nullable().optional(), note: z.string().nullable().optional() }).parse(req.body);
     return prisma.batch.update({ where: { id }, data: { ...body, bestBefore: body.bestBefore ? new Date(body.bestBefore) : undefined } });
   });
 
@@ -116,13 +138,19 @@ export async function adminRoutes(app: FastifyInstance) {
       paymentTermDays: z.number().int().min(0).optional(),
       prepaidOrders: z.number().int().min(0).optional(),
       vatValidated: z.boolean().optional(),
+      locale: z.enum(["nl", "en"]).nullable().optional(),
     }).parse(req.body);
     const data: any = { ...body };
     if (body.vatValidated !== undefined) {
       data.vatValidatedAt = body.vatValidated ? new Date() : null;
       data.vatCheckNote = body.vatValidated ? "Handmatig gecontroleerd" : null;
     }
-    return prisma.company.update({ where: { id }, data });
+    const before = await prisma.company.findUniqueOrThrow({ where: { id } });
+    const company = await prisma.company.update({ where: { id }, data });
+    if (body.status === "ACTIVE" && before.status !== "ACTIVE") {
+      sendMail(accountApproved(company)).catch((e) => app.log.error({ err: e }, "welkomstmail mislukt"));
+    }
+    return company;
   });
 
   // Btw-nummer controleren bij VIES; bij geldig → btw verlegd voor EU-klanten.

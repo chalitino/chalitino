@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { api, date, eur, PAYMENT_NL, STATUS_NL, VAT_NL, type Order } from "@/lib/api";
+import { API, api, date, eur, PAYMENT_NL, STATUS_NL, VAT_NL, type Order } from "@/lib/api";
 
 const NEXT: Record<string, { status: string; label: string }[]> = {
   RECEIVED: [{ status: "PROCESSING", label: "In behandeling nemen" }, { status: "CANCELLED", label: "Annuleren" }],
@@ -26,27 +26,27 @@ export default function StaffOrderDetail() {
     try { setOrder(await api<Order>(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(data) })); } catch (e) { setError((e as Error).message); }
   }
 
-  if (!order) return <p className="text-stone-500">{error ?? "Laden…"}</p>;
+  if (!order) return <p className="text-wt-muted">{error ?? "Laden…"}</p>;
   const prepaidBlock = order.paymentTerms === "PREPAID" && order.paymentStatus !== "PAID";
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
       <div>
-        <Link href="/beheer" className="text-sm text-stone-500 hover:text-stone-800">← Alle orders</Link>
-        <h1 className="mt-2 text-2xl font-semibold">Order #{order.number} <span className="ml-2 rounded-full bg-stone-100 px-2 py-0.5 text-sm font-normal">{STATUS_NL[order.status]}</span></h1>
-        <p className="text-sm text-stone-600">{date(order.createdAt)} · {order.company?.name}{order.reference && <> · Ref. {order.reference}</>}</p>
-        {order.note && <p className="mt-2 rounded bg-amber-50 px-3 py-2 text-sm text-amber-900">Opmerking klant: {order.note}</p>}
+        <Link href="/beheer" className="text-sm text-wt-muted hover:text-wt-brown">← Alle orders</Link>
+        <h1 className="mt-2 text-2xl font-semibold">Order #{order.number} <span className="ml-2 rounded-full bg-wt-cream px-2 py-0.5 text-sm font-normal">{STATUS_NL[order.status]}</span></h1>
+        <p className="text-sm text-wt-muted">{date(order.createdAt)} · {order.company?.name}{order.reference && <> · Ref. {order.reference}</>}</p>
+        {order.note && <p className="mt-2 rounded bg-wt-honey/30 px-3 py-2 text-sm text-wt-brown">Opmerking klant: {order.note}</p>}
 
         <h2 className="mt-6 font-semibold">Orderregels met batch en THT</h2>
-        <p className="text-xs text-stone-500">Batches zijn automatisch toegewezen volgens FEFO (kortste THT eerst). Dit is de pakbon.</p>
-        <table className="mt-2 w-full rounded-lg border border-stone-200 bg-white text-sm">
-          <thead className="bg-stone-100 text-left text-xs uppercase text-stone-600"><tr><th className="px-4 py-2">Artikel</th><th className="px-4 py-2">Aantal</th><th className="px-4 py-2">Batch</th><th className="px-4 py-2">THT</th><th className="px-4 py-2 text-right">Excl. btw</th></tr></thead>
+        <p className="text-xs text-wt-muted">Batches zijn automatisch toegewezen volgens FEFO (kortste THT eerst). Dit is de pakbon.</p>
+        <table className="mt-2 w-full rounded-lg border border-wt-sand bg-white text-sm">
+          <thead className="bg-wt-cream text-left text-xs uppercase text-wt-muted"><tr><th className="px-4 py-2">Artikel</th><th className="px-4 py-2">Aantal</th><th className="px-4 py-2">Batch</th><th className="px-4 py-2">THT</th><th className="px-4 py-2 text-right">Excl. btw</th></tr></thead>
           <tbody>
             {order.lines.map((l) => (
-              <tr key={l.id} className="border-t border-stone-100 align-top">
-                <td className="px-4 py-2"><div className="font-medium">{l.title}</div><div className="font-mono text-xs text-stone-500">{l.sku}</div></td>
+              <tr key={l.id} className="border-t border-wt-sand/60 align-top">
+                <td className="px-4 py-2"><div className="font-medium">{l.title}</div><div className="font-mono text-xs text-wt-muted">{l.sku}</div></td>
                 <td className="px-4 py-2">{l.qty}</td>
-                <td className="px-4 py-2 font-mono text-xs">{l.batches.map((b) => <div key={b.batch.batchNumber}>{b.batch.batchNumber} <span className="text-stone-500">× {b.qty}</span></div>)}</td>
+                <td className="px-4 py-2 font-mono text-xs">{l.batches.map((b) => <div key={b.batch.batchNumber}>{b.batch.batchNumber} <span className="text-wt-muted">× {b.qty}</span></div>)}</td>
                 <td className="px-4 py-2 text-xs">{l.batches.map((b) => <div key={b.batch.batchNumber}>{date(b.batch.bestBefore)}</div>)}</td>
                 <td className="px-4 py-2 text-right">{eur(l.lineTotalExVat)}</td>
               </tr>
@@ -55,50 +55,59 @@ export default function StaffOrderDetail() {
         </table>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 text-sm">
-          <div className="rounded-lg border border-stone-200 bg-white p-4">
+          <div className="rounded-lg border border-wt-sand bg-white p-4">
             <h3 className="font-semibold">Afleveradres</h3>
-            <p className="mt-1 text-stone-700">{order.company?.name}<br />{order.shipStreet}<br />{order.shipPostcode} {order.shipCity}<br />{order.shipCountry}</p>
-            <p className="mt-2 text-stone-500">{order.company?.email}{order.company?.phone && <> · {order.company.phone}</>}</p>
+            <p className="mt-1 text-wt-brown">{order.company?.name}<br />{order.shipStreet}<br />{order.shipPostcode} {order.shipCity}<br />{order.shipCountry}</p>
+            <p className="mt-2 text-wt-muted">{order.company?.email}{order.company?.phone && <> · {order.company.phone}</>}</p>
           </div>
-          <div className="rounded-lg border border-stone-200 bg-white p-4">
+          <div className="rounded-lg border border-wt-sand bg-white p-4">
             <h3 className="font-semibold">Bedragen</h3>
-            <dl className="mt-1 space-y-1 text-stone-700">
+            <dl className="mt-1 space-y-1 text-wt-brown">
               <div className="flex justify-between"><dt>Subtotaal excl. btw</dt><dd>{eur(order.subtotalExVat)}</dd></div>
               <div className="flex justify-between"><dt>Verzending</dt><dd>{eur(order.shippingExVat)}</dd></div>
               <div className="flex justify-between"><dt>Btw ({VAT_NL[order.vatScheme]})</dt><dd>{eur(order.vatTotal)}</dd></div>
               <div className="flex justify-between font-semibold"><dt>Totaal</dt><dd>{eur(order.totalIncVat)}</dd></div>
             </dl>
-            {order.vatScheme === "EU_REVERSE_CHARGE" && <p className="mt-2 text-xs text-stone-500">Factuurtekst: btw verlegd, art. 138 Btw-richtlijn. Btw-nr klant {order.company?.vatNumber}.</p>}
+            {order.vatScheme === "EU_REVERSE_CHARGE" && <p className="mt-2 text-xs text-wt-muted">Factuurtekst: btw verlegd, art. 138 Btw-richtlijn. Btw-nr klant {order.company?.vatNumber}.</p>}
           </div>
         </div>
       </div>
 
       <aside className="h-fit space-y-4 text-sm">
-        <div className="rounded-lg border border-stone-200 bg-white p-4">
+        <div className="rounded-lg border border-wt-sand bg-white p-4">
+          <h3 className="font-semibold">Documenten</h3>
+          <div className="mt-2 flex gap-2">
+            <a href={`${API}/admin/orders/${order.id}/pakbon`} target="_blank" rel="noreferrer" className="flex-1 rounded border border-wt-brown py-1.5 text-center font-medium hover:bg-wt-cream">Pakbon</a>
+            <a href={`${API}/admin/orders/${order.id}/factuur`} target="_blank" rel="noreferrer" className="flex-1 rounded border border-wt-brown py-1.5 text-center font-medium hover:bg-wt-cream">Factuur</a>
+          </div>
+          {order.invoiceNumber && <p className="mt-2 text-xs text-wt-muted">Factuurnr <span className="font-mono">{order.invoiceNumber}</span></p>}
+          <p className="mt-1 text-xs text-wt-muted">Opent in huisstijl; printen of opslaan als PDF. Taal volgt het land van de klant.</p>
+        </div>
+        <div className="rounded-lg border border-wt-sand bg-white p-4">
           <h3 className="font-semibold">Betaling</h3>
-          <p className="mt-1 text-stone-700">{PAYMENT_NL[order.paymentTerms]}{order.dueDate && <> · vervalt {date(order.dueDate)}</>}</p>
-          <p className={`mt-1 font-medium ${order.paymentStatus === "PAID" ? "text-green-700" : "text-amber-700"}`}>{order.paymentStatus === "PAID" ? `Betaald op ${date(order.paidAt)}` : "Nog niet betaald"}</p>
-          {prepaidBlock && <p className="mt-2 rounded bg-amber-50 px-3 py-2 text-xs text-amber-900">Vooruitbetaling: pas verzenden na bijschrijving op de bank.</p>}
-          <button onClick={() => patch({ paymentStatus: order.paymentStatus === "PAID" ? "UNPAID" : "PAID" })} className="mt-3 w-full rounded border border-stone-300 py-1.5 hover:bg-stone-50">
+          <p className="mt-1 text-wt-brown">{PAYMENT_NL[order.paymentTerms]}{order.dueDate && <> · vervalt {date(order.dueDate)}</>}</p>
+          <p className={`mt-1 font-medium ${order.paymentStatus === "PAID" ? "text-green-700" : "text-wt-rust"}`}>{order.paymentStatus === "PAID" ? `Betaald op ${date(order.paidAt)}` : "Nog niet betaald"}</p>
+          {prepaidBlock && <p className="mt-2 rounded bg-wt-honey/30 px-3 py-2 text-xs text-wt-brown">Vooruitbetaling: pas verzenden na bijschrijving op de bank.</p>}
+          <button onClick={() => patch({ paymentStatus: order.paymentStatus === "PAID" ? "UNPAID" : "PAID" })} className="mt-3 w-full rounded border border-wt-sand py-1.5 hover:bg-wt-cream">
             {order.paymentStatus === "PAID" ? "Markeer als onbetaald" : "Markeer als betaald (bank bijgeschreven)"}
           </button>
         </div>
-        <div className="rounded-lg border border-stone-200 bg-white p-4">
+        <div className="rounded-lg border border-wt-sand bg-white p-4">
           <h3 className="font-semibold">Verzending (Sendcloud)</h3>
-          <label className="mt-2 block text-xs text-stone-600">Track & trace-code
-            <input value={tracking} onChange={(e) => setTracking(e.target.value)} className="mt-1 w-full rounded border border-stone-300 px-2 py-1" placeholder="3SABC…" />
+          <label className="mt-2 block text-xs text-wt-muted">Track & trace-code
+            <input value={tracking} onChange={(e) => setTracking(e.target.value)} className="mt-1 w-full rounded border border-wt-sand px-2 py-1" placeholder="3SABC…" />
           </label>
-          <button onClick={() => patch({ trackingCode: tracking || null })} className="mt-2 w-full rounded border border-stone-300 py-1.5 hover:bg-stone-50">Opslaan</button>
-          {order.shippedAt && <p className="mt-2 text-xs text-stone-500">Verzonden op {date(order.shippedAt)}</p>}
+          <button onClick={() => patch({ trackingCode: tracking || null })} className="mt-2 w-full rounded border border-wt-sand py-1.5 hover:bg-wt-cream">Opslaan</button>
+          {order.shippedAt && <p className="mt-2 text-xs text-wt-muted">Verzonden op {date(order.shippedAt)}</p>}
         </div>
-        <div className="rounded-lg border border-stone-200 bg-white p-4">
+        <div className="rounded-lg border border-wt-sand bg-white p-4">
           <h3 className="font-semibold">Status</h3>
           <div className="mt-2 space-y-2">
             {NEXT[order.status].map((n) => (
               <button key={n.status} onClick={() => patch({ status: n.status })} disabled={n.status === "SHIPPED" && prepaidBlock}
-                className={`w-full rounded py-1.5 ${n.status === "CANCELLED" ? "border border-red-200 text-red-700 hover:bg-red-50" : "bg-amber-700 text-white hover:bg-amber-800 disabled:opacity-40"}`}>{n.label}</button>
+                className={`w-full rounded py-1.5 ${n.status === "CANCELLED" ? "border border-red-200 text-red-700 hover:bg-red-50" : "bg-wt-rust text-white hover:bg-wt-rust-dark disabled:opacity-40"}`}>{n.label}</button>
             ))}
-            {NEXT[order.status].length === 0 && <p className="text-stone-500">Afgerond.</p>}
+            {NEXT[order.status].length === 0 && <p className="text-wt-muted">Afgerond.</p>}
           </div>
           {error && <p className="mt-3 rounded bg-red-50 px-3 py-2 text-red-700">{error}</p>}
         </div>

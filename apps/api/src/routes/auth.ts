@@ -3,6 +3,8 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma.js";
 import { requireAuth, type JwtUser } from "../lib/auth.js";
+import { sendMail } from "../lib/mail.js";
+import { registrationReceived } from "../emails/templates.js";
 
 const COOKIE = "wt_session";
 
@@ -80,6 +82,7 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     });
+    registrationReceived(company).then(async (m) => { await sendMail(m.dealer); await sendMail(m.internal); }).catch((e) => app.log.error({ err: e }, "aanvraagmail mislukt"));
     return reply.code(201).send({ companyId: company.id, status: company.status, message: "Aanvraag ontvangen. We beoordelen uw aanvraag en nemen contact op." });
   });
 }

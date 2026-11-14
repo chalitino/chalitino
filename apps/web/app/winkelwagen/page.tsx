@@ -28,21 +28,21 @@ export default function CartPage() {
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
 
-  if (cart.items.length === 0) return <div><h1 className="text-2xl font-semibold">Winkelwagen</h1><p className="mt-4 text-stone-600">Je winkelwagen is leeg.</p></div>;
+  if (cart.items.length === 0) return <div><h1 className="text-2xl font-semibold">Winkelwagen</h1><p className="mt-4 text-wt-muted">Je winkelwagen is leeg.</p></div>;
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
       <div>
         <h1 className="text-2xl font-semibold">Winkelwagen</h1>
-        <table className="mt-6 w-full rounded-lg border border-stone-200 bg-white text-sm">
-          <thead className="bg-stone-100 text-left text-xs uppercase text-stone-600"><tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Aantal</th><th className="px-4 py-3">Prijs/st.</th><th className="px-4 py-3 text-right">Totaal</th></tr></thead>
+        <table className="mt-6 w-full rounded-lg border border-wt-sand bg-white text-sm">
+          <thead className="bg-wt-cream text-left text-xs uppercase text-wt-muted"><tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Aantal</th><th className="px-4 py-3">Prijs/st.</th><th className="px-4 py-3 text-right">Totaal</th></tr></thead>
           <tbody>
             {cart.items.map((i) => {
               const ql = quote?.lines.find((l) => l.variantId === i.variantId);
               return (
-                <tr key={i.variantId} className="border-t border-stone-100">
-                  <td className="px-4 py-3"><div className="font-medium">{i.title}</div><div className="font-mono text-xs text-stone-500">{i.sku}</div></td>
-                  <td className="px-4 py-3"><input type="number" min={0} step={i.caseSize} value={i.qty} onChange={(e) => cart.setQty(i.variantId, Number(e.target.value))} className="w-20 rounded border border-stone-300 px-2 py-1" /></td>
+                <tr key={i.variantId} className="border-t border-wt-sand/60">
+                  <td className="px-4 py-3"><div className="font-medium">{i.title}</div><div className="font-mono text-xs text-wt-muted">{i.sku}</div></td>
+                  <td className="px-4 py-3"><input type="number" min={0} step={i.caseSize} value={i.qty} onChange={(e) => cart.setQty(i.variantId, Number(e.target.value))} className="w-20 rounded border border-wt-sand px-2 py-1" /></td>
                   <td className="px-4 py-3">{eur(ql?.unitPriceExVat ?? i.price)}</td>
                   <td className="px-4 py-3 text-right font-medium">{eur(ql?.lineTotalExVat ?? i.price * i.qty)}</td>
                 </tr>
@@ -51,27 +51,27 @@ export default function CartPage() {
           </tbody>
         </table>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <label className="text-sm">Jouw referentie / inkoopordernummer<input value={reference} onChange={(e) => setReference(e.target.value)} className="mt-1 w-full rounded border border-stone-300 px-3 py-2" /></label>
-          <label className="text-sm">Opmerking voor WicoTreats<input value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full rounded border border-stone-300 px-3 py-2" /></label>
+          <label className="text-sm">Jouw referentie / inkoopordernummer<input value={reference} onChange={(e) => setReference(e.target.value)} className="mt-1 w-full rounded border border-wt-sand px-3 py-2" /></label>
+          <label className="text-sm">Opmerking voor WicoTreats<input value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full rounded border border-wt-sand px-3 py-2" /></label>
         </div>
       </div>
-      <aside className="h-fit rounded-lg border border-stone-200 bg-white p-5 text-sm">
+      <aside className="h-fit rounded-lg border border-wt-sand bg-white p-5 text-sm">
         <h2 className="font-semibold">Overzicht</h2>
         {quote && (
           <dl className="mt-3 space-y-1">
             <div className="flex justify-between"><dt>Subtotaal excl. btw</dt><dd>{eur(quote.subtotalExVat)}</dd></div>
             <div className="flex justify-between"><dt>Verzendkosten</dt><dd>{quote.shippingExVat === 0 ? "Gratis" : eur(quote.shippingExVat)}</dd></div>
             <div className="flex justify-between"><dt>Btw</dt><dd>{eur(quote.vatTotal)}</dd></div>
-            <div className="text-xs text-stone-500">{quote.vatSchemeLabel}</div>
-            <div className="flex justify-between border-t border-stone-200 pt-2 font-semibold"><dt>Totaal incl. btw</dt><dd>{eur(quote.totalIncVat)}</dd></div>
+            <div className="text-xs text-wt-muted">{quote.vatSchemeLabel}</div>
+            <div className="flex justify-between border-t border-wt-sand pt-2 font-semibold"><dt>Totaal incl. btw</dt><dd>{eur(quote.totalIncVat)}</dd></div>
           </dl>
         )}
-        {quote && quote.shippingExVat > 0 && <p className="mt-3 text-xs text-stone-500">Gratis verzending vanaf {eur(quote.freeShippingExVat)} excl. btw.</p>}
-        {quote?.errors.map((e) => <p key={e} className="mt-3 rounded bg-amber-50 px-3 py-2 text-amber-800">{e}</p>)}
+        {quote && quote.shippingExVat > 0 && <p className="mt-3 text-xs text-wt-muted">Gratis verzending vanaf {eur(quote.freeShippingExVat)} excl. btw.</p>}
+        {quote?.errors.map((e) => <p key={e} className="mt-3 rounded bg-wt-honey/30 px-3 py-2 text-wt-rust">{e}</p>)}
         {error && <p className="mt-3 rounded bg-red-50 px-3 py-2 text-red-700 whitespace-pre-line">{error}</p>}
-        <button disabled={busy || !quote || quote.errors.length > 0} onClick={place} className="mt-4 w-full rounded bg-amber-700 py-2 font-medium text-white hover:bg-amber-800 disabled:opacity-40">{busy ? "Bezig…" : "Bestelling plaatsen"}</button>
+        <button disabled={busy || !quote || quote.errors.length > 0} onClick={place} className="mt-4 w-full rounded bg-wt-rust py-2 font-medium text-white hover:bg-wt-rust-dark disabled:opacity-40">{busy ? "Bezig…" : "Bestelling plaatsen"}</button>
         {quote && (
-          <p className="mt-2 text-xs text-stone-500">
+          <p className="mt-2 text-xs text-wt-muted">
             {quote.paymentTerms === "PREPAID"
               ? "Vooruitbetaling: je ontvangt betaalinstructies; we verzenden na bijschrijving. Na je eerste bestellingen kun je op rekening bestellen."
               : `Op rekening, betaling binnen ${quote.paymentTermDays} dagen na factuurdatum.`}

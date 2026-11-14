@@ -5,6 +5,9 @@ import { requireActiveCustomer } from "../lib/auth.js";
 import { getSettingNumber, pickTier, resolvePriceListId, round2 } from "../lib/pricing.js";
 import { determineVatScheme, VAT_SCHEME_LABEL } from "../lib/vat.js";
 import { allocateFefo, stockForVariants } from "../lib/stock.js";
+import { sendMail } from "../lib/mail.js";
+import { loadOrder, newOrderInternal, orderConfirmation } from "../emails/templates.js";
+import { factuurHtml } from "../lib/documents.js";
 
 const orderInput = z.object({
   reference: z.string().max(100).optional(),
@@ -129,7 +132,10 @@ export async function orderRoutes(app: FastifyInstance) {
         for (const line of created.lines) await allocateFefo(tx, line.id, line.variantId, line.qty);
         return tx.order.findUniqueOrThrow({ where: { id: created.id }, include: orderInclude });
       });
-      // TODO: orderbevestiging mailen (Resend/Postmark), met betaalinstructies bij PREPAID.
+      // Orderbevestiging (met betaalinstructies bij vooruitbetaling) + interne melding. Fouten blokkeren de order niet.
+      loadOrder(order.id)
+        .then(async (full) => { await sendMail(await orderConfirmation(full)); await sendMail(await newOrderInternal(full)); })
+        .catch((e) => app.log.error({ err: e }, "orderbevestiging mislukt"));
       return reply.code(201).send(order);
     } catch (e: any) {
       return reply.code(409).send({ errors: [e.message ?? "Order kon niet worden geplaatst"] });
@@ -145,5 +151,15 @@ export async function orderRoutes(app: FastifyInstance) {
     const order = await prisma.order.findFirst({ where: { id, companyId: req.user.companyId! }, include: orderInclude });
     if (!order) return reply.code(404).send({ error: "Order niet gevonden" });
     return order;
+  });
+
+  // Factuur voor de dealer zelf (pas beschikbaar als er een factuurnummer is, d.w.z. na verzending).
+  app.get("/orders/:id/factuur", { preHandler: requireActiveCustomer }, async (req, reply) => {
+    const { id } = z.object({ id: z.string() }).parse(req.params);
+    const order = await prisma.order.findFirst({ where: { id, companyId: req.user.companyId! } });
+    if (!order) return reply.code(404).send({ error: "Order niet gevonden" });
+    if (!order.invoiceNumber) return reply.code(409).send({ error: "De factuur volgt bij verzending" });
+    reply.type("text/html; charset=utf-8");
+    return factuurHtml(await loadOrder(id));
   });
 }

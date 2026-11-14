@@ -33,50 +33,50 @@ export default function CatalogPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Assortiment</h1>
-          <p className="text-sm text-stone-600">Jouw inkoopprijs per eenheid, excl. btw. Verpakkingen per omdoos, bulk per kg.</p>
+          <p className="text-sm text-wt-muted">Jouw inkoopprijs per eenheid, excl. btw. Verpakkingen per omdoos, bulk per kg.</p>
         </div>
         <div className="flex gap-2">
-          <input placeholder="Zoek op naam of SKU" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded border border-stone-300 px-3 py-2 text-sm" />
-          <select value={animal} onChange={(e) => setAnimal(e.target.value)} className="rounded border border-stone-300 px-3 py-2 text-sm">
+          <input placeholder="Zoek op naam of SKU" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded border border-wt-sand px-3 py-2 text-sm" />
+          <select value={animal} onChange={(e) => setAnimal(e.target.value)} className="rounded border border-wt-sand px-3 py-2 text-sm">
             <option value="">Alle diersoorten</option>
             {animals.map((a) => <option key={a.animal} value={a.animal}>{a.animal} ({a.count})</option>)}
           </select>
         </div>
       </div>
 
-      {flash && <div className="fixed bottom-6 right-6 rounded bg-stone-900 px-4 py-2 text-sm text-white shadow">{flash}</div>}
+      {flash && <div className="fixed bottom-6 right-6 rounded bg-wt-brown px-4 py-2 text-sm text-white shadow">{flash}</div>}
 
-      {products === null ? <p className="mt-8 text-stone-500">Laden…</p> : products.length === 0 ? <p className="mt-8 text-stone-500">Geen producten gevonden.</p> : (
-        <div className="mt-6 overflow-x-auto rounded-lg border border-stone-200 bg-white">
+      {products === null ? <p className="mt-8 text-wt-muted">Laden…</p> : products.length === 0 ? <p className="mt-8 text-wt-muted">Geen producten gevonden.</p> : (
+        <div className="mt-6 overflow-x-auto rounded-lg border border-wt-sand bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-stone-100 text-left text-xs uppercase tracking-wide text-stone-600">
+            <thead className="bg-wt-cream text-left text-xs uppercase tracking-wide text-wt-muted">
               <tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Eenheid</th><th className="px-4 py-3">SKU</th><th className="px-4 py-3">Omdoos</th><th className="px-4 py-3">Voorraad</th><th className="px-4 py-3">Adviesprijs</th><th className="px-4 py-3">Jouw prijs</th><th className="px-4 py-3">Aantal</th><th className="px-4 py-3"></th></tr>
             </thead>
             <tbody>
               {products.flatMap((p) => p.variants.map((v) => (
-                <tr key={v.id} className="border-t border-stone-100">
+                <tr key={v.id} className="border-t border-wt-sand/60">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      {p.imageUrl ? <img src={p.imageUrl} alt="" className="h-10 w-10 rounded object-cover" /> : <div className="h-10 w-10 rounded bg-stone-100" />}
-                      <div><div className="font-medium">{p.title}</div><div className="text-xs text-stone-500">{p.animal}</div></div>
+                      {p.imageUrl ? <img src={p.imageUrl} alt="" className="h-10 w-10 rounded object-cover" /> : <div className="h-10 w-10 rounded bg-wt-cream" />}
+                      <div><div className="font-medium">{p.title}</div><div className="text-xs text-wt-muted">{p.animal}</div></div>
                     </div>
                   </td>
-                  <td className="px-4 py-3"><span className={`rounded px-1.5 py-0.5 text-xs ${v.unitType === "BULK" ? "bg-stone-800 text-white" : "bg-stone-100"}`}>{UNIT_NL[v.unitType]}</span> <span className="ml-1">{v.packContent}</span></td>
+                  <td className="px-4 py-3"><span className={`rounded px-1.5 py-0.5 text-xs ${v.unitType === "BULK" ? "bg-wt-brown text-white" : "bg-wt-cream"}`}>{UNIT_NL[v.unitType]}</span> <span className="ml-1">{v.packContent}</span></td>
                   <td className="px-4 py-3 font-mono text-xs">{v.sku}</td>
                   <td className="px-4 py-3">{v.caseSize > 1 ? `${v.caseSize} st.` : "–"}</td>
                   <td className="px-4 py-3">{v.stock > 0 ? <span className="text-green-700">{v.stock}</span> : <span className="text-red-600">Uitverkocht</span>}</td>
-                  <td className="px-4 py-3 text-stone-500">{v.retailPrice != null ? eur(v.retailPrice) : "–"}</td>
+                  <td className="px-4 py-3 text-wt-muted">{v.retailPrice != null ? eur(v.retailPrice) : "–"}</td>
                   <td className="px-4 py-3">
-                    {v.price == null ? <span className="text-stone-400">op aanvraag</span> : <>
+                    {v.price == null ? <span className="text-wt-muted/70">op aanvraag</span> : <>
                       <div className="font-semibold">{eur(v.price)}</div>
-                      {v.tiers.filter((t) => t.minQty > 1).map((t) => <div key={t.minQty} className="text-xs text-stone-500">vanaf {t.minQty}: {eur(t.price)}</div>)}
+                      {v.tiers.filter((t) => t.minQty > 1).map((t) => <div key={t.minQty} className="text-xs text-wt-muted">vanaf {t.minQty}: {eur(t.price)}</div>)}
                     </>}
                   </td>
                   <td className="px-4 py-3">
-                    <input type="number" min={v.caseSize} step={v.caseSize} value={qty[v.id] ?? v.caseSize} onChange={(e) => setQty({ ...qty, [v.id]: Number(e.target.value) })} className="w-20 rounded border border-stone-300 px-2 py-1" />
+                    <input type="number" min={v.caseSize} step={v.caseSize} value={qty[v.id] ?? v.caseSize} onChange={(e) => setQty({ ...qty, [v.id]: Number(e.target.value) })} className="w-20 rounded border border-wt-sand px-2 py-1" />
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button disabled={v.price == null} onClick={() => add(p, v)} className="rounded bg-amber-700 px-3 py-1.5 text-white hover:bg-amber-800 disabled:opacity-40">Toevoegen</button>
+                    <button disabled={v.price == null} onClick={() => add(p, v)} className="rounded bg-wt-rust px-3 py-1.5 text-white hover:bg-wt-rust-dark disabled:opacity-40">Toevoegen</button>
                   </td>
                 </tr>
               )))}

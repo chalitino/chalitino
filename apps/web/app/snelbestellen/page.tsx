@@ -33,17 +33,17 @@ export default function QuickOrderPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-semibold">Snelbestellen</h1>
-      <p className="mt-1 text-sm text-stone-600">Plak per regel een SKU en aantal, bijvoorbeeld <code className="rounded bg-stone-100 px-1">BRUUN001 24</code>. Zonder aantal wordt één omdoos genomen.</p>
+      <p className="mt-1 text-sm text-wt-muted">Plak per regel een SKU en aantal, bijvoorbeeld <code className="rounded bg-wt-cream px-1">BRUUN001 24</code>. Zonder aantal wordt één omdoos genomen.</p>
       <form onSubmit={submit} className="mt-6 space-y-3">
-        <textarea rows={10} value={text} onChange={(e) => setText(e.target.value)} className="w-full rounded border border-stone-300 p-3 font-mono text-sm" placeholder={"BRUUN001 24\nBRUUN016 12"} />
-        <button className="rounded bg-amber-700 px-4 py-2 font-medium text-white hover:bg-amber-800">Toevoegen aan winkelwagen</button>
+        <textarea rows={10} value={text} onChange={(e) => setText(e.target.value)} className="w-full rounded border border-wt-sand p-3 font-mono text-sm" placeholder={"BRUUN001 24\nBRUUN016 12"} />
+        <button className="rounded bg-wt-rust px-4 py-2 font-medium text-white hover:bg-wt-rust-dark">Toevoegen aan winkelwagen</button>
       </form>
       {result && (
-        <div className="mt-6 space-y-2 rounded-lg border border-stone-200 bg-white p-4 text-sm">
+        <div className="mt-6 space-y-2 rounded-lg border border-wt-sand bg-white p-4 text-sm">
           {result.added.length > 0 && <div><div className="font-medium text-green-700">Toegevoegd</div><ul className="list-disc pl-5">{result.added.map((a) => <li key={a}>{a}</li>)}</ul></div>}
           {result.missing.length > 0 && <div className="text-red-700">Onbekende SKU&apos;s: {result.missing.join(", ")}</div>}
-          {result.noPrice.length > 0 && <div className="text-amber-700">Geen prijs (op aanvraag): {result.noPrice.join(", ")}</div>}
-          {result.added.length > 0 && <button onClick={() => router.push("/winkelwagen")} className="mt-2 rounded border border-stone-300 px-3 py-1.5 hover:bg-stone-50">Naar winkelwagen</button>}
+          {result.noPrice.length > 0 && <div className="text-wt-rust">Geen prijs (op aanvraag): {result.noPrice.join(", ")}</div>}
+          {result.added.length > 0 && <button onClick={() => router.push("/winkelwagen")} className="mt-2 rounded border border-wt-sand px-3 py-1.5 hover:bg-wt-cream">Naar winkelwagen</button>}
         </div>
       )}
     </div>

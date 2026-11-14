@@ -30,6 +30,7 @@ Testlogins na de seed:
 |---|---|---|---|
 | Dealer (NL, 9% btw, eerste 2 orders vooruit) | dealer@snuffelhoek.example | dealer1234 | shop |
 | Dealer (BE, btw verlegd, op rekening) | dealer@hondenwinkel.example | dealer1234 | shop |
+| Dealer (DE, Engelstalig, btw verlegd, vooruitbetaling) | dealer@hundeladen.example | dealer1234 | shop |
 | Medewerker (STAFF) | magazijn@wicotreats.com | staff1234 | orders, voorraad & batches |
 | Beheer (ADMIN) | admin@wicotreats.com | admin1234 | alles, incl. klanten en prijzen |
 
@@ -40,6 +41,9 @@ Testlogins na de seed:
 - **Betaling**: eerste twee orders vooruitbetalen, daarna op rekening (14 dagen). Medewerker markeert "betaald" bij bankbijschrift; vooruitbetaalde orders kunnen pas daarna op verzonden.
 - **Voorraad** is eigen B2B-voorraad, opgebouwd uit batches met THT. Een order koppelt automatisch batches volgens FEFO (kortste THT eerst); de pakbon toont batch + THT per regel.
 - **Verzending** via Sendcloud: nu trackingcode per order, API-koppeling volgt.
+- **Huisstijl** van wicotreats.com (Gluten/Rethink Sans/IBM Plex Mono, bruin-crème, kleurstrook, zegel) in portaal, e-mails, pakbon en factuur. Taal: NL voor NL/BE, EN daarbuiten.
+- **E-mails** bij orderbevestiging (met betaalinstructies), verzending (track & trace, factuurnummer), aanvraag en goedkeuring. Provider via `MAIL_PROVIDER` (`console` in dev: HTML in `apps/api/outbox`; `resend`; `smtp`).
+- **Pakbon en factuur** genereert het systeem zelf, met partij, THT en analyse per regel; opvolgende factuurnummers (`F2026-0001`).
 
 ## Producten uit Shopify halen
 
@@ -73,4 +77,6 @@ B2B-prijzen zet je daarna via de admin-API (`PUT /admin/price-lists/:id/items`),
 ![Assortiment](docs/screenshots/01-assortiment.png)
 ![Winkelwagen](docs/screenshots/03-winkelwagen.png)
 ![Beheer: order met batch en THT](docs/screenshots/06-beheer-order-detail.png)
-![Beheer: voorraad en batches](docs/screenshots/08-beheer-voorraad.png)
+![Pakbon](docs/screenshots/10-pakbon-nl.png)
+![Factuur](docs/screenshots/11-factuur-nl.png)
+![Orderbevestiging per e-mail](docs/screenshots/20-mail-bevestiging-nl.png)

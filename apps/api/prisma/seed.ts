@@ -63,12 +63,12 @@ async function main() {
         create: { priceListId: dealer.id, variantId: variant.id, minQty: tierQty, price: round(u.price * 0.95) },
       });
       // Twee batches met verschillende THT, zodat FEFO zichtbaar is
-      for (const [i, b] of [{ n: "A", tht: 120, qty: 60 }, { n: "B", tht: 300, qty: 240 }].entries()) {
+      for (const [i, b] of [{ n: "A", tht: 120, qty: 60, an: "Vocht 12% · E 68% · V 8% · A 6%" }, { n: "B", tht: 300, qty: 240, an: "Vocht 11% · E 70% · V 7% · A 6%" }].entries()) {
         const batchNumber = `${u.sku}-2026${String(i + 1).padStart(2, "0")}${b.n}`;
         await prisma.batch.upsert({
           where: { variantId_batchNumber: { variantId: variant.id, batchNumber } },
-          update: {},
-          create: { variantId: variant.id, batchNumber, bestBefore: daysFromNow(b.tht), qtyReceived: b.qty, qtyRemaining: b.qty },
+          update: { analysis: b.an },
+          create: { variantId: variant.id, batchNumber, bestBefore: daysFromNow(b.tht), qtyReceived: b.qty, qtyRemaining: b.qty, analysis: b.an },
         });
       }
     }
@@ -100,13 +100,24 @@ async function main() {
       invoiceStreet: "Meir 10", invoicePostcode: "2000", invoiceCity: "Antwerpen", invoiceCountry: "BE", shipStreet: "Meir 10", shipPostcode: "2000", shipCity: "Antwerpen", shipCountry: "BE",
     },
   });
+  const de = await prisma.company.upsert({
+    where: { id: "demo-dealer-de" },
+    update: {},
+    create: {
+      id: "demo-dealer-de", name: "Hundeladen Köln GmbH", vatNumber: "DE123456789", email: "order@hundeladen.example",
+      status: "ACTIVE", priceListId: dealer.id, vatValidated: true, vatValidatedAt: new Date(), vatCheckNote: "Seed: gevalideerd", prepaidOrders: 2,
+      invoiceStreet: "Hohe Straße 5", invoicePostcode: "50667", invoiceCity: "Köln", invoiceCountry: "DE", shipStreet: "Hohe Straße 5", shipPostcode: "50667", shipCity: "Köln", shipCountry: "DE",
+    },
+  });
+  await prisma.user.upsert({ where: { email: "dealer@hundeladen.example" }, update: {}, create: { email: "dealer@hundeladen.example", passwordHash: await hash("dealer1234"), name: "Anna Schmidt", role: "CUSTOMER", companyId: de.id } });
+
   await prisma.user.upsert({ where: { email: "dealer@hondenwinkel.example" }, update: {}, create: { email: "dealer@hondenwinkel.example", passwordHash: await hash("dealer1234"), name: "Tom Peeters", role: "CUSTOMER", companyId: be.id } });
 
-  for (const [key, value] of [["minOrderExVat", "100"], ["freeShippingExVat", "250"], ["shippingExVat", "7.50"], ["bankIban", "NL00BANK0123456789"], ["bankName", "WicoTreats"]]) {
+  for (const [key, value] of [["minOrderExVat", "100"], ["freeShippingExVat", "250"], ["shippingExVat", "7.50"], ["orderNotifyEmail", "info@wicotreats.com"], ["invoicePrefix", "F"]]) {
     await prisma.setting.upsert({ where: { key }, update: {}, create: { key, value } });
   }
 
-  console.log("Seed klaar.\n  beheer:     admin@wicotreats.com / admin1234\n  magazijn:   magazijn@wicotreats.com / staff1234\n  dealer NL:  dealer@snuffelhoek.example / dealer1234\n  dealer BE:  dealer@hondenwinkel.example / dealer1234");
+  console.log("Seed klaar.\n  beheer:     admin@wicotreats.com / admin1234\n  magazijn:   magazijn@wicotreats.com / staff1234\n  dealer NL:  dealer@snuffelhoek.example / dealer1234\n  dealer BE:  dealer@hondenwinkel.example / dealer1234\n  dealer DE:  dealer@hundeladen.example / dealer1234 (Engelstalig, vooruitbetaling, btw verlegd)");
 }
 
 main().finally(() => prisma.$disconnect());

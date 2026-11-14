@@ -1,26 +1,22 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Huisstijl WicoTreats (zie apps/api/src/lib/brand.ts) */
+@theme {
+  --color-wt-brown: #4a3933;
+  --color-wt-muted: #7a6a60;
+  --color-wt-sand: #e3d6c2;
+  --color-wt-cream: #fbf6ee;
+  --color-wt-rust: #9a5b2e;
+  --color-wt-rust-dark: #7f4a24;
+  --color-wt-honey: #eac88e;
+  --color-wt-red: #b8321c;
+  --font-sans: "Rethink Sans", Helvetica, Arial, sans-serif;
+  --font-display: Gluten, "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  --font-mono: "IBM Plex Mono", Menlo, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+body { font-family: var(--font-sans); }
+h1 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em; }
+.wt-strip { display: flex; height: 6px; }
+.wt-strip i { flex: 1; display: block; }
+.wt-label { font-weight: 700; font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-wt-muted); }

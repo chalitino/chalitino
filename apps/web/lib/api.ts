@@ -26,7 +26,7 @@ export type LineBatch = { qty: number; batch: { id?: string; batchNumber: string
 export type OrderLine = { id: string; sku: string; title: string; qty: number; unitPriceExVat: string; vatRate: string; lineTotalExVat: string; batches: LineBatch[] };
 export type Order = {
   id: string; number: number; reference: string | null; note: string | null; status: string; vatScheme: string; paymentTerms: string; paymentStatus: string; paidAt: string | null; dueDate: string | null;
-  trackingCode: string | null; trackingUrl: string | null; shippedAt: string | null;
+  trackingCode: string | null; trackingUrl: string | null; shippedAt: string | null; invoiceNumber: string | null;
   subtotalExVat: string; shippingExVat: string; vatTotal: string; totalIncVat: string; createdAt: string;
   shipStreet: string | null; shipPostcode: string | null; shipCity: string | null; shipCountry: string;
   lines: OrderLine[]; company?: { id: string; name: string; email: string; phone: string | null; vatNumber: string | null; shipCountry: string };

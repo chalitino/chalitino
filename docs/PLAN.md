@@ -125,10 +125,28 @@ Zie `apps/api/prisma/schema.prisma`.
 | 6 | Verzending | Sendcloud. | Nu: trackingcode per order invoeren. Fase 2: Sendcloud-API koppelen (parcel aanmaken vanuit order, label printen, track & trace automatisch terug). |
 | 7 | Medewerker-login met THT/batch | Inkomende orders voor medewerkers; batch en THT automatisch gekoppeld. | Rol `STAFF`. Bij elke order wijst `allocateFefo()` batches toe met de kortste THT eerst (First Expired, First Out) en boekt voorraad af; annulering geeft terug. Beheerscherm toont per orderregel batch + THT (pakbon) en per batch welke orders hem kregen (traceerbaarheid, recall). |
 
-## 8. Volgende stappen
+## 8. Huisstijl en documenten (14 nov 2026)
 
-1. Orderbevestiging en betaalinstructies per e-mail (Resend/Postmark).
-2. Factuur-PDF met correcte btw-tekst (verlegd / export) en vervaldatum.
-3. Sendcloud-koppeling: label + track & trace automatisch.
-4. Shopify-sync draaien voor alle 142 producten; B2B-eenheden (100 g, bulk) per product aanmaken en prijzen importeren via CSV.
-5. Hosting: web op Vercel, API + Postgres op Railway/Fly/Hetzner; domein `b2b.wicotreats.com`.
+De huisstijl is overgenomen uit de Order Printer Pro-sjablonen van wicotreats.com en staat op één plek
+(`apps/api/src/lib/brand.ts` voor mails/documenten, `apps/web/app/globals.css` voor het portaal):
+Gluten (koppen), Rethink Sans (tekst), IBM Plex Mono (codes), warm bruin `#4A3933`, crème `#FBF6EE`,
+roest `#9A5B2E`, de tienkleurige strook, het zegel "WicoTreats · Swalmen · sinds 1993", bedrijfsgegevens
+(Wico Diervoeding V.O.F., KvK 13033716, BTW NL806311551B01, NVWA 7346, IBAN NL69 INGB 0682 8682 05).
+
+**Taalregel** (zoals in de sjablonen): Nederlands voor NL/BE, Engels voor alle andere landen; per klant
+te overschrijven in beheer.
+
+| Onderdeel | Status |
+|---|---|
+| E-mails: orderbevestiging (met betaalinstructies bij vooruitbetaling), verzendbericht met track & trace en factuurnummer, aanvraag ontvangen, account goedgekeurd, interne melding nieuwe order/aanvraag | Klaar. Provider instelbaar: `console` (dev), `resend`, `smtp`. |
+| Pakbon met per regel partij, THT en analyse, vinkvakjes en handtekeningvelden | Klaar, `GET /admin/orders/:id/pakbon` (printen / opslaan als PDF). |
+| Factuur met btw per regel of verlegd, betaalinstructies, betaald-stempel, opvolgend factuurnummer `F2026-0001` (toegekend bij verzending of eerste opvraag) | Klaar, `GET /admin/orders/:id/factuur`; dealer ziet eigen factuur in "Mijn orders". |
+| Analyse per batch (Vocht · E · V · A) | Klaar, in te voeren bij inboeken; staat op de pakbon (in het Engels vertaald naar Moisture/Protein/Fat/Ash). |
+
+## 9. Volgende stappen
+
+1. E-mailprovider kiezen en instellen (Resend-account of SMTP van wicotreats.com); logo-URL invullen.
+2. Sendcloud-koppeling: label + track & trace automatisch terug in de verzendmail.
+3. Shopify-sync draaien voor alle 142 producten; B2B-eenheden (100 g, bulk) per product aanmaken en prijzen importeren via CSV.
+4. Hosting: web op Vercel, API + Postgres op Railway/Fly/Hetzner; domein `b2b.wicotreats.com`.
+5. Facturen ook als echte PDF-bijlage bij de verzendmail (nu: link naar printbare factuur).
