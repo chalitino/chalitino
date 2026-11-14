@@ -24,7 +24,9 @@ pnpm db:seed                                 # testdata: prijslijsten, demo-deal
 pnpm dev                                     # API op :4000, web op :3000
 ```
 
-Testlogins na de seed:
+Testlogins na de seed. Dealers loggen in met een **e-mailcode** (geen wachtwoord): vraag een code aan op de
+loginpagina; in dev staat de code in de API-log (`inlogcode (dev)`) en in `apps/api/outbox`. Medewerkers en beheer
+loggen in met wachtwoord via "Inloggen met wachtwoord".
 
 | Rol | E-mail | Wachtwoord | Ziet |
 |---|---|---|---|
@@ -41,7 +43,9 @@ Testlogins na de seed:
 - **Betaling**: eerste twee orders vooruitbetalen, daarna op rekening (14 dagen). Medewerker markeert "betaald" bij bankbijschrift; vooruitbetaalde orders kunnen pas daarna op verzonden.
 - **Voorraad** is eigen B2B-voorraad, opgebouwd uit batches met THT. Een order koppelt automatisch batches volgens FEFO (kortste THT eerst); de pakbon toont batch + THT per regel.
 - **Verzending** via Sendcloud: nu trackingcode per order, API-koppeling volgt.
-- **Huisstijl** van wicotreats.com (Gluten/Rethink Sans/IBM Plex Mono, bruin-crème, kleurstrook, zegel) in portaal, e-mails, pakbon en factuur. Taal: NL voor NL/BE, EN daarbuiten.
+- **Huisstijl en pagina-opbouw** uit het WicoTreats Shopify-thema (`b2b-wico.css`, B2B-secties): woordmerk, zoekbalk "artikelnummer, product of batchnummer", diersoort-tegels, snelbestellen per diersoort met vaste balk, accountoverzicht, donkere footer met zegel en "We have nothing to hide.". Zelfde stijl in e-mails, pakbon en factuur. Taal: NL voor NL/BE, EN daarbuiten.
+- **Inloggen met e-mailcode** voor dealers (zoals het thema): geen wachtwoord, eenmalige code van 6 cijfers, 10 minuten geldig. Aanvraagformulier met bedrijfstype, website en "hoe ken je ons".
+- **Traceerbaarheid voor de klant**: zoeken op batchnummer in de orderhistorie; partij en THT per orderregel.
 - **E-mails** bij orderbevestiging (met betaalinstructies), verzending (track & trace, factuurnummer), aanvraag en goedkeuring. Provider via `MAIL_PROVIDER` (`console` in dev: HTML in `apps/api/outbox`; `resend`; `smtp`).
 - **Pakbon en factuur** genereert het systeem zelf, met partij, THT en analyse per regel; opvolgende factuurnummers (`F2026-0001`).
 

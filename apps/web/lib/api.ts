@@ -15,14 +15,19 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 export type Role = "ADMIN" | "STAFF" | "CUSTOMER";
-export type Me = { user: { sub: string; name: string; role: Role; email: string }; company: { id: string; name: string; shipCountry: string; vatValidated: boolean; paymentTermDays: number; prepaidOrders: number } | null };
+export type Company = {
+  id: string; name: string; email: string; phone: string | null; kvkNumber: string | null; vatNumber: string | null; companyType: string | null; website: string | null;
+  status: string; shipStreet: string | null; shipPostcode: string | null; shipCity: string | null; shipCountry: string; invoiceStreet: string | null; invoicePostcode: string | null; invoiceCity: string | null; invoiceCountry: string;
+  vatValidated: boolean; vatCheckNote: string | null; paymentTermDays: number; prepaidOrders: number; locale: string | null; createdAt: string; _count?: { orders: number };
+};
+export type Me = { user: { sub: string; name: string; role: Role; email: string }; company: Company | null };
 
 export type Variant = {
   id: string; sku: string; title: string; unitType: "PACK" | "BULK"; packContent: string | null; ean: string | null; caseSize: number; orderInCase: boolean;
-  stock: number; retailPrice: number | null; vatRate: number; price: number | null; tiers: { minQty: number; price: number }[];
+  stock: number; analysis: string | null; nextBatch: { batchNumber: string; bestBefore: string } | null; retailPrice: number | null; vatRate: number; price: number | null; tiers: { minQty: number; price: number }[];
 };
 export type Product = { id: string; handle: string; title: string; animal: string | null; tags: string[]; imageUrl: string | null; variants: Variant[] };
-export type LineBatch = { qty: number; batch: { id?: string; batchNumber: string; bestBefore: string } };
+export type LineBatch = { qty: number; batch: { id?: string; batchNumber: string; bestBefore: string; analysis?: string | null } };
 export type OrderLine = { id: string; sku: string; title: string; qty: number; unitPriceExVat: string; vatRate: string; lineTotalExVat: string; batches: LineBatch[] };
 export type Order = {
   id: string; number: number; reference: string | null; note: string | null; status: string; vatScheme: string; paymentTerms: string; paymentStatus: string; paidAt: string | null; dueDate: string | null;
@@ -42,3 +47,5 @@ export const STATUS_NL: Record<string, string> = { RECEIVED: "Ontvangen", PROCES
 export const PAYMENT_NL: Record<string, string> = { PREPAID: "Vooruitbetaling", ON_ACCOUNT: "Op rekening" };
 export const VAT_NL: Record<string, string> = { NL_VAT: "NL btw", EU_REVERSE_CHARGE: "Btw verlegd", EXPORT: "0% export" };
 export const UNIT_NL: Record<string, string> = { PACK: "Verpakking", BULK: "Bulk" };
+export const paymentTermsText = (c: { prepaidOrders: number; paymentTermDays: number }, paidOrders = 0) =>
+  c.prepaidOrders > paidOrders ? `eerste ${c.prepaidOrders === 1 ? "order" : `${c.prepaidOrders} orders`} vooruit, daarna ${c.paymentTermDays} dagen op rekening` : `${c.paymentTermDays} dagen op rekening`;

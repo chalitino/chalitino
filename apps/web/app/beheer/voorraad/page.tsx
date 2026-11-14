@@ -29,7 +29,7 @@ export default function StockPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Voorraad & batches</h1>
+      <h1 className="h1 text-4xl">Voorraad & batches</h1>
       <p className="text-sm text-wt-muted">Eigen B2B-voorraad, los van Shopify. Voorraad = som van de batches; orders pakken automatisch de kortste THT.</p>
 
       <form onSubmit={receive} className="mt-6 grid gap-3 rounded-lg border border-wt-sand bg-white p-4 sm:grid-cols-5 text-sm">
@@ -39,7 +39,7 @@ export default function StockPage() {
         <input required type="date" value={form.bestBefore} onChange={(e) => setForm({ ...form, bestBefore: e.target.value })} className="rounded border border-wt-sand px-3 py-2" title="THT" />
         <input required type="number" min={1} placeholder="Aantal" value={form.qty} onChange={(e) => setForm({ ...form, qty: e.target.value })} className="rounded border border-wt-sand px-3 py-2" />
         <input placeholder="Analyse (bv. Vocht 12% · E 68% · V 8% · A 6%)" value={form.analysis} onChange={(e) => setForm({ ...form, analysis: e.target.value })} className="rounded border border-wt-sand px-3 py-2 sm:col-span-4" />
-        <button className="rounded bg-wt-rust px-4 py-2 font-medium text-white hover:bg-wt-rust-dark">Inboeken</button>
+        <button className="btn sm">Inboeken</button>
         {msg && <p className="sm:col-span-5 text-wt-brown">{msg}</p>}
       </form>
 

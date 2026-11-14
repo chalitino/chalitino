@@ -143,6 +143,17 @@ te overschrijven in beheer.
 | Factuur met btw per regel of verlegd, betaalinstructies, betaald-stempel, opvolgend factuurnummer `F2026-0001` (toegekend bij verzending of eerste opvraag) | Klaar, `GET /admin/orders/:id/factuur`; dealer ziet eigen factuur in "Mijn orders". |
 | Analyse per batch (Vocht · E · V · A) | Klaar, in te voeren bij inboeken; staat op de pakbon (in het Engels vertaald naar Moisture/Protein/Fat/Ash). |
 
+## 8b. Shopify-thema als ontwerpbron (14 nov 2026)
+
+Het geëxporteerde thema `wicotreats-b2b-nieuw-thema-d2` is de ontwerpbron voor het portaal. Overgenomen:
+tokens uit `assets/b2b-wico.css` (crème `#FBF6EE`, bruin `#4A3933`/`#2E221E`, lijn `#E3D6C2`, zacht
+`#F1E4CC`, roest `#9A5B2E`, goud `#EAC88E`, ok/warn/bad), hoekige knoppen in kapitalen, eyebrow met driekleurig
+blokje, tabellen, pills, voorraadstip; de secties `b2b-header`, `b2b-footer`, `b2b-login` (e-mailcode),
+`b2b-register`, `b2b-account`, `b2b-order` en `quick-order` (per diersoort, vaste balk "Alles in de wagen",
+CSV-download, voetnoot). Het woordmerk is de tekst-SVG uit `snippets/logo-woordmerk.liquid`; het logo-bestand
+zelf zit niet in de export (Shopify-hosted) en kan later via `BRAND_LOGO_URL` worden toegevoegd. Diersoortkleuren
+staan in `apps/web/lib/brand.tsx` (in het thema een metaobject) en zijn aan te passen.
+
 ## 9. Volgende stappen
 
 1. E-mailprovider kiezen en instellen (Resend-account of SMTP van wicotreats.com); logo-URL invullen.

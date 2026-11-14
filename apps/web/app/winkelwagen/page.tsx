@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { api, eur, type Order, type Quote } from "@/lib/api";
 import { useCart } from "@/lib/cart";
 
@@ -28,35 +29,35 @@ export default function CartPage() {
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
 
-  if (cart.items.length === 0) return <div><h1 className="text-2xl font-semibold">Winkelwagen</h1><p className="mt-4 text-wt-muted">Je winkelwagen is leeg.</p></div>;
+  if (cart.items.length === 0) return <div className="page-head"><div className="eyebrow">Winkelwagen</div><h1 className="h1">Je wagen is leeg.</h1><p className="lead mt-3.5">Ga naar <Link href="/snelbestellen" className="underline">snelbestellen</Link> om artikelen toe te voegen.</p></div>;
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
       <div>
-        <h1 className="text-2xl font-semibold">Winkelwagen</h1>
-        <table className="mt-6 w-full rounded-lg border border-wt-sand bg-white text-sm">
-          <thead className="bg-wt-cream text-left text-xs uppercase text-wt-muted"><tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Aantal</th><th className="px-4 py-3">Prijs/st.</th><th className="px-4 py-3 text-right">Totaal</th></tr></thead>
+        <div className="page-head"><div className="eyebrow">Winkelwagen</div><h1 className="h1">Controleren en <em>bestellen.</em></h1></div>
+        <div className="tbl"><table>
+          <thead><tr><th>Product</th><th>Aantal</th><th className="n">Prijs ex BTW</th><th className="n">Totaal</th></tr></thead>
           <tbody>
             {cart.items.map((i) => {
               const ql = quote?.lines.find((l) => l.variantId === i.variantId);
               return (
-                <tr key={i.variantId} className="border-t border-wt-sand/60">
-                  <td className="px-4 py-3"><div className="font-medium">{i.title}</div><div className="font-mono text-xs text-wt-muted">{i.sku}</div></td>
-                  <td className="px-4 py-3"><input type="number" min={0} step={i.caseSize} value={i.qty} onChange={(e) => cart.setQty(i.variantId, Number(e.target.value))} className="w-20 rounded border border-wt-sand px-2 py-1" /></td>
-                  <td className="px-4 py-3">{eur(ql?.unitPriceExVat ?? i.price)}</td>
-                  <td className="px-4 py-3 text-right font-medium">{eur(ql?.lineTotalExVat ?? i.price * i.qty)}</td>
+                <tr key={i.variantId}>
+                  <td><b>{i.title}</b><br /><small className="mono text-wt-mute">{i.sku}{i.caseSize > 1 && ` · ${i.caseSize} / karton`}</small></td>
+                  <td><span className="qty"><button type="button" onClick={() => cart.setQty(i.variantId, i.qty - i.caseSize)}>−</button><input type="number" min={0} step={i.caseSize} value={i.qty} onChange={(e) => cart.setQty(i.variantId, Number(e.target.value))} /><button type="button" onClick={() => cart.setQty(i.variantId, i.qty + i.caseSize)}>+</button></span></td>
+                  <td className="n mono">{eur(ql?.unitPriceExVat ?? i.price)}</td>
+                  <td className="n mono"><b>{eur(ql?.lineTotalExVat ?? i.price * i.qty)}</b></td>
                 </tr>
               );
             })}
           </tbody>
-        </table>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <label className="text-sm">Jouw referentie / inkoopordernummer<input value={reference} onChange={(e) => setReference(e.target.value)} className="mt-1 w-full rounded border border-wt-sand px-3 py-2" /></label>
-          <label className="text-sm">Opmerking voor WicoTreats<input value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full rounded border border-wt-sand px-3 py-2" /></label>
-        </div>
+        </table></div>
+        <div className="form mt-6"><div className="two">
+          <label>Jouw PO-nummer / referentie<input value={reference} onChange={(e) => setReference(e.target.value)} /></label>
+          <label>Opmerking voor WicoTreats<input value={note} onChange={(e) => setNote(e.target.value)} /></label>
+        </div></div>
       </div>
-      <aside className="h-fit rounded-lg border border-wt-sand bg-white p-5 text-sm">
-        <h2 className="font-semibold">Overzicht</h2>
+      <aside className="h-fit rounded-[2px] border border-wt-line bg-wt-bg p-5 text-sm lg:mt-14">
+        <h2 className="text-xl">Overzicht</h2>
         {quote && (
           <dl className="mt-3 space-y-1">
             <div className="flex justify-between"><dt>Subtotaal excl. btw</dt><dd>{eur(quote.subtotalExVat)}</dd></div>
@@ -68,8 +69,8 @@ export default function CartPage() {
         )}
         {quote && quote.shippingExVat > 0 && <p className="mt-3 text-xs text-wt-muted">Gratis verzending vanaf {eur(quote.freeShippingExVat)} excl. btw.</p>}
         {quote?.errors.map((e) => <p key={e} className="mt-3 rounded bg-wt-honey/30 px-3 py-2 text-wt-rust">{e}</p>)}
-        {error && <p className="mt-3 rounded bg-red-50 px-3 py-2 text-red-700 whitespace-pre-line">{error}</p>}
-        <button disabled={busy || !quote || quote.errors.length > 0} onClick={place} className="mt-4 w-full rounded bg-wt-rust py-2 font-medium text-white hover:bg-wt-rust-dark disabled:opacity-40">{busy ? "Bezig…" : "Bestelling plaatsen"}</button>
+        {error && <div className="notice bad mt-3 whitespace-pre-line">{error}</div>}
+        <button disabled={busy || !quote || quote.errors.length > 0} onClick={place} className="btn block mt-4"><span>{busy ? "Bezig…" : "Bestelling plaatsen"}</span><span>→</span></button>
         {quote && (
           <p className="mt-2 text-xs text-wt-muted">
             {quote.paymentTerms === "PREPAID"

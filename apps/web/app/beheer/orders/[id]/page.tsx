@@ -77,8 +77,8 @@ export default function StaffOrderDetail() {
         <div className="rounded-lg border border-wt-sand bg-white p-4">
           <h3 className="font-semibold">Documenten</h3>
           <div className="mt-2 flex gap-2">
-            <a href={`${API}/admin/orders/${order.id}/pakbon`} target="_blank" rel="noreferrer" className="flex-1 rounded border border-wt-brown py-1.5 text-center font-medium hover:bg-wt-cream">Pakbon</a>
-            <a href={`${API}/admin/orders/${order.id}/factuur`} target="_blank" rel="noreferrer" className="flex-1 rounded border border-wt-brown py-1.5 text-center font-medium hover:bg-wt-cream">Factuur</a>
+            <a href={`${API}/admin/orders/${order.id}/pakbon`} target="_blank" rel="noreferrer" className="btn ghost sm flex-1">Pakbon</a>
+            <a href={`${API}/admin/orders/${order.id}/factuur`} target="_blank" rel="noreferrer" className="btn ghost sm flex-1">Factuur</a>
           </div>
           {order.invoiceNumber && <p className="mt-2 text-xs text-wt-muted">Factuurnr <span className="font-mono">{order.invoiceNumber}</span></p>}
           <p className="mt-1 text-xs text-wt-muted">Opent in huisstijl; printen of opslaan als PDF. Taal volgt het land van de klant.</p>
@@ -88,7 +88,7 @@ export default function StaffOrderDetail() {
           <p className="mt-1 text-wt-brown">{PAYMENT_NL[order.paymentTerms]}{order.dueDate && <> · vervalt {date(order.dueDate)}</>}</p>
           <p className={`mt-1 font-medium ${order.paymentStatus === "PAID" ? "text-green-700" : "text-wt-rust"}`}>{order.paymentStatus === "PAID" ? `Betaald op ${date(order.paidAt)}` : "Nog niet betaald"}</p>
           {prepaidBlock && <p className="mt-2 rounded bg-wt-honey/30 px-3 py-2 text-xs text-wt-brown">Vooruitbetaling: pas verzenden na bijschrijving op de bank.</p>}
-          <button onClick={() => patch({ paymentStatus: order.paymentStatus === "PAID" ? "UNPAID" : "PAID" })} className="mt-3 w-full rounded border border-wt-sand py-1.5 hover:bg-wt-cream">
+          <button onClick={() => patch({ paymentStatus: order.paymentStatus === "PAID" ? "UNPAID" : "PAID" })} className="btn ghost sm block mt-3">
             {order.paymentStatus === "PAID" ? "Markeer als onbetaald" : "Markeer als betaald (bank bijgeschreven)"}
           </button>
         </div>
@@ -97,7 +97,7 @@ export default function StaffOrderDetail() {
           <label className="mt-2 block text-xs text-wt-muted">Track & trace-code
             <input value={tracking} onChange={(e) => setTracking(e.target.value)} className="mt-1 w-full rounded border border-wt-sand px-2 py-1" placeholder="3SABC…" />
           </label>
-          <button onClick={() => patch({ trackingCode: tracking || null })} className="mt-2 w-full rounded border border-wt-sand py-1.5 hover:bg-wt-cream">Opslaan</button>
+          <button onClick={() => patch({ trackingCode: tracking || null })} className="btn ghost sm block mt-2">Opslaan</button>
           {order.shippedAt && <p className="mt-2 text-xs text-wt-muted">Verzonden op {date(order.shippedAt)}</p>}
         </div>
         <div className="rounded-lg border border-wt-sand bg-white p-4">
@@ -105,7 +105,7 @@ export default function StaffOrderDetail() {
           <div className="mt-2 space-y-2">
             {NEXT[order.status].map((n) => (
               <button key={n.status} onClick={() => patch({ status: n.status })} disabled={n.status === "SHIPPED" && prepaidBlock}
-                className={`w-full rounded py-1.5 ${n.status === "CANCELLED" ? "border border-red-200 text-red-700 hover:bg-red-50" : "bg-wt-rust text-white hover:bg-wt-rust-dark disabled:opacity-40"}`}>{n.label}</button>
+                className={`btn sm block ${n.status === "CANCELLED" ? "danger" : ""}`}>{n.label}</button>
             ))}
             {NEXT[order.status].length === 0 && <p className="text-wt-muted">Afgerond.</p>}
           </div>

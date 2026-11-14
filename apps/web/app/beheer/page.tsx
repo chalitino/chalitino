@@ -16,7 +16,7 @@ export default function StaffOrdersPage() {
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Inkomende orders</h1>
+        <h1 className="h1 text-4xl">Inkomende orders</h1>
         <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded border border-wt-sand px-3 py-2 text-sm">
           {STATUSES.map((s) => <option key={s} value={s}>{s ? STATUS_NL[s] : "Alle statussen"}</option>)}
         </select>

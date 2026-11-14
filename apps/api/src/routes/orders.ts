@@ -142,8 +142,14 @@ export async function orderRoutes(app: FastifyInstance) {
     }
   });
 
+  // Orderhistorie; ?batch=… vindt de orders waarin een partij zat (traceerbaarheid, recall).
   app.get("/orders", { preHandler: requireActiveCustomer }, async (req) => {
-    return prisma.order.findMany({ where: { companyId: req.user.companyId! }, orderBy: { createdAt: "desc" }, include: orderInclude });
+    const q = z.object({ batch: z.string().optional() }).parse(req.query);
+    return prisma.order.findMany({
+      where: { companyId: req.user.companyId!, ...(q.batch ? { lines: { some: { batches: { some: { batch: { batchNumber: { contains: q.batch, mode: "insensitive" } } } } } } } : {}) },
+      orderBy: { createdAt: "desc" },
+      include: orderInclude,
+    });
   });
 
   app.get("/orders/:id", { preHandler: requireActiveCustomer }, async (req, reply) => {

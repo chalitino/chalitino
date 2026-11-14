@@ -22,7 +22,7 @@ export default function CustomersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Klanten</h1>
+      <h1 className="h1 text-4xl">Klanten</h1>
       <p className="text-sm text-wt-muted">Aanvragen goedkeuren, btw-nummer controleren (EU-klanten krijgen dan btw verlegd) en betaalafspraken instellen.</p>
       {msg && <p className="mt-3 rounded bg-wt-cream px-3 py-2 text-sm">{msg}</p>}
       <div className="mt-6 space-y-3">
@@ -41,8 +41,8 @@ export default function CustomersPage() {
                 <div className={`text-xs ${c.vatValidated ? "text-green-700" : "text-wt-muted"}`}>{c.vatValidated ? "✓ gecontroleerd" : "niet gecontroleerd"}{c.vatCheckNote && ` · ${c.vatCheckNote}`}</div>
                 {c.shipCountry !== "NL" && c.vatNumber && (
                   <div className="mt-1 flex gap-2">
-                    <button onClick={() => vies(c.id)} className="rounded border border-wt-sand px-2 py-1 text-xs hover:bg-wt-cream">Check bij VIES</button>
-                    <button onClick={() => patch(c.id, { vatValidated: !c.vatValidated })} className="rounded border border-wt-sand px-2 py-1 text-xs hover:bg-wt-cream">{c.vatValidated ? "Intrekken" : "Handmatig goedkeuren"}</button>
+                    <button onClick={() => vies(c.id)} className="btn ghost sm">Check bij VIES</button>
+                    <button onClick={() => patch(c.id, { vatValidated: !c.vatValidated })} className="btn ghost sm">{c.vatValidated ? "Intrekken" : "Handmatig goedkeuren"}</button>
                   </div>
                 )}
               </div>
@@ -53,8 +53,8 @@ export default function CustomersPage() {
                 <label className="block">Daarna <input type="number" min={0} defaultValue={c.paymentTermDays} onBlur={(e) => Number(e.target.value) !== c.paymentTermDays && patch(c.id, { paymentTermDays: Number(e.target.value) })} className="mx-1 w-14 rounded border border-wt-sand px-1" /> dagen</label>
               </div>
               <div className="flex items-start gap-2">
-                {c.status !== "ACTIVE" && <button onClick={() => patch(c.id, { status: "ACTIVE" })} className="rounded bg-wt-rust px-3 py-1.5 text-white hover:bg-wt-rust-dark">Goedkeuren / activeren</button>}
-                {c.status === "ACTIVE" && <button onClick={() => patch(c.id, { status: "BLOCKED" })} className="rounded border border-red-200 px-3 py-1.5 text-red-700 hover:bg-red-50">Blokkeren</button>}
+                {c.status !== "ACTIVE" && <button onClick={() => patch(c.id, { status: "ACTIVE" })} className="btn sm">Goedkeuren / activeren</button>}
+                {c.status === "ACTIVE" && <button onClick={() => patch(c.id, { status: "BLOCKED" })} className="btn danger sm">Blokkeren</button>}
               </div>
             </div>
           </div>

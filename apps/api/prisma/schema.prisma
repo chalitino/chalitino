@@ -58,6 +58,10 @@ model Company {
   vatNumber       String?
   email           String
   phone           String?
+  companyType     String? // Dierenspeciaalzaak, Groothandel / distributeur, ...
+  website         String?
+  howFound        String?
+  requestNote     String?
   status          CompanyStatus @default(PENDING)
   paymentTermDays Int           @default(14)
   prepaidOrders   Int           @default(2) // aantal eerste orders dat vooruitbetaald moet worden
@@ -237,6 +241,18 @@ model OrderLineBatch {
   batch       Batch     @relation(fields: [batchId], references: [id])
   batchId     String
   qty         Int
+}
+
+// Eenmalige inlogcode per e-mail (geen wachtwoord nodig), zoals in het WicoTreats-thema.
+model LoginCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([email, code])
 }
 
 model Setting {

@@ -24,7 +24,12 @@ export async function catalogRoutes(app: FastifyInstance) {
         variants: { where: { b2bActive: true }, orderBy: [{ unitType: "asc" }, { title: "asc" }], include: { prices: priceListId ? { where: { priceListId }, orderBy: { minQty: "asc" } } : false } },
       },
     });
-    const stock = await stockForVariants(products.flatMap((p) => p.variants.map((v) => v.id)));
+    const variantIds = products.flatMap((p) => p.variants.map((v) => v.id));
+    const stock = await stockForVariants(variantIds);
+    // Analyse van de partij die als eerste geleverd wordt (kortste THT)
+    const firstBatches = await prisma.batch.findMany({ where: { variantId: { in: variantIds }, qtyRemaining: { gt: 0 } }, orderBy: [{ bestBefore: "asc" }], select: { variantId: true, analysis: true, batchNumber: true, bestBefore: true } });
+    const firstBatch = new Map<string, { analysis: string | null; batchNumber: string; bestBefore: Date }>();
+    for (const b of firstBatches) if (!firstBatch.has(b.variantId)) firstBatch.set(b.variantId, b);
 
     return products.map((p) => ({
       id: p.id,
@@ -46,6 +51,8 @@ export async function catalogRoutes(app: FastifyInstance) {
           caseSize: v.caseSize,
           orderInCase: v.orderInCase,
           stock: stock.get(v.id) ?? 0,
+          analysis: firstBatch.get(v.id)?.analysis ?? null,
+          nextBatch: firstBatch.get(v.id) ? { batchNumber: firstBatch.get(v.id)!.batchNumber, bestBefore: firstBatch.get(v.id)!.bestBefore } : null,
           retailPrice: v.retailPrice == null ? null : Number(v.retailPrice),
           vatRate: Number(v.vatRate),
           price: base?.price ?? null,

@@ -174,3 +174,13 @@ export function accountApproved(company: { name: string; email: string; shipCoun
     replyTo: brand.supportEmail,
   };
 }
+
+/** Eenmalige inlogcode. */
+export function loginCode(company: { email: string; name: string; shipCountry: string; locale?: string | null }, code: string, ttlMin: number) {
+  const lang = langFor(company);
+  const big = `<p style="margin:18px 0;font-family:${brand.fonts.mono};font-size:34px;letter-spacing:.3em;color:${brand.colors.text};">${code}</p>`;
+  const nl = { subject: `Je inlogcode: ${code} – WicoTreats B2B`, title: "Je inlogcode", body: `<p>Gebruik deze code om in te loggen op ${brand.portalName}. De code is ${ttlMin} minuten geldig.</p>${big}<p style="font-size:12px;color:${brand.colors.muted};">Niet zelf aangevraagd? Dan kun je deze e-mail negeren.</p>` };
+  const en = { subject: `Your login code: ${code} – WicoTreats B2B`, title: "Your login code", body: `<p>Use this code to log in to ${brand.portalName}. It is valid for ${ttlMin} minutes.</p>${big}<p style="font-size:12px;color:${brand.colors.muted};">Didn't request this? You can ignore this e-mail.</p>` };
+  const t = lang === "en" ? en : nl;
+  return { to: company.email, subject: t.subject, html: layout({ lang, title: t.title, body: t.body }), text: `${t.title}: ${code}` };
+}
