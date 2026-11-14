@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api, eur, type Order } from "@/lib/api";
+import { api, eur, type Order, type Quote } from "@/lib/api";
 import { useCart } from "@/lib/cart";
 
-type Quote = { subtotalExVat: number; shippingExVat: number; vatTotal: number; totalIncVat: number; minOrderExVat: number; freeShippingExVat: number; errors: string[]; lines: { variantId: string; unitPriceExVat: number; lineTotalExVat: number }[] };
 
 export default function CartPage() {
   const cart = useCart();
@@ -63,6 +62,7 @@ export default function CartPage() {
             <div className="flex justify-between"><dt>Subtotaal excl. btw</dt><dd>{eur(quote.subtotalExVat)}</dd></div>
             <div className="flex justify-between"><dt>Verzendkosten</dt><dd>{quote.shippingExVat === 0 ? "Gratis" : eur(quote.shippingExVat)}</dd></div>
             <div className="flex justify-between"><dt>Btw</dt><dd>{eur(quote.vatTotal)}</dd></div>
+            <div className="text-xs text-stone-500">{quote.vatSchemeLabel}</div>
             <div className="flex justify-between border-t border-stone-200 pt-2 font-semibold"><dt>Totaal incl. btw</dt><dd>{eur(quote.totalIncVat)}</dd></div>
           </dl>
         )}
@@ -70,7 +70,13 @@ export default function CartPage() {
         {quote?.errors.map((e) => <p key={e} className="mt-3 rounded bg-amber-50 px-3 py-2 text-amber-800">{e}</p>)}
         {error && <p className="mt-3 rounded bg-red-50 px-3 py-2 text-red-700 whitespace-pre-line">{error}</p>}
         <button disabled={busy || !quote || quote.errors.length > 0} onClick={place} className="mt-4 w-full rounded bg-amber-700 py-2 font-medium text-white hover:bg-amber-800 disabled:opacity-40">{busy ? "Bezig…" : "Bestelling plaatsen"}</button>
-        <p className="mt-2 text-xs text-stone-500">Betaling op rekening volgens jouw betaaltermijn.</p>
+        {quote && (
+          <p className="mt-2 text-xs text-stone-500">
+            {quote.paymentTerms === "PREPAID"
+              ? "Vooruitbetaling: je ontvangt betaalinstructies; we verzenden na bijschrijving. Na je eerste bestellingen kun je op rekening bestellen."
+              : `Op rekening, betaling binnen ${quote.paymentTermDays} dagen na factuurdatum.`}
+          </p>
+        )}
       </aside>
     </div>
   );

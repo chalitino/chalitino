@@ -14,13 +14,31 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   return data as T;
 }
 
+export type Role = "ADMIN" | "STAFF" | "CUSTOMER";
+export type Me = { user: { sub: string; name: string; role: Role; email: string }; company: { id: string; name: string; shipCountry: string; vatValidated: boolean; paymentTermDays: number; prepaidOrders: number } | null };
+
 export type Variant = {
-  id: string; sku: string; title: string; ean: string | null; caseSize: number; orderInCase: boolean;
-  stock: number; retailPrice: number; vatRate: number; price: number | null; tiers: { minQty: number; price: number }[];
+  id: string; sku: string; title: string; unitType: "PACK" | "BULK"; packContent: string | null; ean: string | null; caseSize: number; orderInCase: boolean;
+  stock: number; retailPrice: number | null; vatRate: number; price: number | null; tiers: { minQty: number; price: number }[];
 };
 export type Product = { id: string; handle: string; title: string; animal: string | null; tags: string[]; imageUrl: string | null; variants: Variant[] };
-export type OrderLine = { id: string; sku: string; title: string; qty: number; unitPriceExVat: string; lineTotalExVat: string };
-export type Order = { id: string; number: number; reference: string | null; status: string; subtotalExVat: string; shippingExVat: string; vatTotal: string; totalIncVat: string; createdAt: string; lines: OrderLine[] };
+export type LineBatch = { qty: number; batch: { id?: string; batchNumber: string; bestBefore: string } };
+export type OrderLine = { id: string; sku: string; title: string; qty: number; unitPriceExVat: string; vatRate: string; lineTotalExVat: string; batches: LineBatch[] };
+export type Order = {
+  id: string; number: number; reference: string | null; note: string | null; status: string; vatScheme: string; paymentTerms: string; paymentStatus: string; paidAt: string | null; dueDate: string | null;
+  trackingCode: string | null; trackingUrl: string | null; shippedAt: string | null;
+  subtotalExVat: string; shippingExVat: string; vatTotal: string; totalIncVat: string; createdAt: string;
+  shipStreet: string | null; shipPostcode: string | null; shipCity: string | null; shipCountry: string;
+  lines: OrderLine[]; company?: { id: string; name: string; email: string; phone: string | null; vatNumber: string | null; shipCountry: string };
+};
+export type Quote = {
+  subtotalExVat: number; shippingExVat: number; vatTotal: number; totalIncVat: number; vatScheme: string; vatSchemeLabel: string; paymentTerms: string; paymentTermDays: number;
+  minOrderExVat: number; freeShippingExVat: number; errors: string[]; lines: { variantId: string; unitPriceExVat: number; lineTotalExVat: number }[];
+};
 
 export const eur = (n: number | string) => new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(Number(n));
+export const date = (d: string | Date | null | undefined) => (d ? new Date(d).toLocaleDateString("nl-NL") : "–");
 export const STATUS_NL: Record<string, string> = { RECEIVED: "Ontvangen", PROCESSING: "In behandeling", SHIPPED: "Verzonden", INVOICED: "Gefactureerd", CANCELLED: "Geannuleerd" };
+export const PAYMENT_NL: Record<string, string> = { PREPAID: "Vooruitbetaling", ON_ACCOUNT: "Op rekening" };
+export const VAT_NL: Record<string, string> = { NL_VAT: "NL btw", EU_REVERSE_CHARGE: "Btw verlegd", EXPORT: "0% export" };
+export const UNIT_NL: Record<string, string> = { PACK: "Verpakking", BULK: "Bulk" };

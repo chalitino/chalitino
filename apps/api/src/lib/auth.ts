@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-export type JwtUser = { sub: string; role: "ADMIN" | "CUSTOMER"; companyId: string | null; name: string; email: string };
+export type JwtUser = { sub: string; role: "ADMIN" | "STAFF" | "CUSTOMER"; companyId: string | null; name: string; email: string };
 
 declare module "@fastify/jwt" {
   interface FastifyJWT {
@@ -17,10 +17,18 @@ export async function requireAuth(req: FastifyRequest, reply: FastifyReply) {
   }
 }
 
+/** Beheer (alles). */
 export async function requireAdmin(req: FastifyRequest, reply: FastifyReply) {
   await requireAuth(req, reply);
   if (reply.sent) return;
   if (req.user.role !== "ADMIN") return reply.code(403).send({ error: "Alleen voor beheerders" });
+}
+
+/** Medewerkers en beheer: orders verwerken, voorraad/batches. */
+export async function requireStaff(req: FastifyRequest, reply: FastifyReply) {
+  await requireAuth(req, reply);
+  if (reply.sent) return;
+  if (req.user.role !== "ADMIN" && req.user.role !== "STAFF") return reply.code(403).send({ error: "Alleen voor medewerkers" });
 }
 
 export async function requireActiveCustomer(req: FastifyRequest, reply: FastifyReply) {

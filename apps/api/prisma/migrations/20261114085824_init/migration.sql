@@ -1,5 +1,17 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'CUSTOMER');
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'STAFF', 'CUSTOMER');
+
+-- CreateEnum
+CREATE TYPE "UnitType" AS ENUM ('PACK', 'BULK');
+
+-- CreateEnum
+CREATE TYPE "VatScheme" AS ENUM ('NL_VAT', 'EU_REVERSE_CHARGE', 'EXPORT');
+
+-- CreateEnum
+CREATE TYPE "PaymentTerms" AS ENUM ('PREPAID', 'ON_ACCOUNT');
+
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('UNPAID', 'PAID');
 
 -- CreateEnum
 CREATE TYPE "CompanyStatus" AS ENUM ('PENDING', 'ACTIVE', 'BLOCKED');
@@ -17,6 +29,10 @@ CREATE TABLE "Company" (
     "phone" TEXT,
     "status" "CompanyStatus" NOT NULL DEFAULT 'PENDING',
     "paymentTermDays" INTEGER NOT NULL DEFAULT 14,
+    "prepaidOrders" INTEGER NOT NULL DEFAULT 2,
+    "vatValidated" BOOLEAN NOT NULL DEFAULT false,
+    "vatValidatedAt" TIMESTAMP(3),
+    "vatCheckNote" TEXT,
     "invoiceStreet" TEXT,
     "invoicePostcode" TEXT,
     "invoiceCity" TEXT,
@@ -71,13 +87,15 @@ CREATE TABLE "ProductVariant" (
     "productId" TEXT NOT NULL,
     "sku" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "unitType" "UnitType" NOT NULL DEFAULT 'PACK',
+    "packContent" TEXT,
     "ean" TEXT,
     "caseSize" INTEGER NOT NULL DEFAULT 1,
     "orderInCase" BOOLEAN NOT NULL DEFAULT false,
-    "retailPrice" DECIMAL(10,2) NOT NULL,
+    "retailPrice" DECIMAL(10,2),
     "vatRate" DECIMAL(5,2) NOT NULL DEFAULT 9,
-    "stock" INTEGER NOT NULL DEFAULT 0,
     "weightGrams" INTEGER,
+    "b2bActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -115,6 +133,14 @@ CREATE TABLE "Order" (
     "reference" TEXT,
     "note" TEXT,
     "status" "OrderStatus" NOT NULL DEFAULT 'RECEIVED',
+    "vatScheme" "VatScheme" NOT NULL DEFAULT 'NL_VAT',
+    "paymentTerms" "PaymentTerms" NOT NULL DEFAULT 'ON_ACCOUNT',
+    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'UNPAID',
+    "paidAt" TIMESTAMP(3),
+    "dueDate" TIMESTAMP(3),
+    "trackingCode" TEXT,
+    "trackingUrl" TEXT,
+    "shippedAt" TIMESTAMP(3),
     "subtotalExVat" DECIMAL(10,2) NOT NULL,
     "vatTotal" DECIMAL(10,2) NOT NULL,
     "shippingExVat" DECIMAL(10,2) NOT NULL DEFAULT 0,
@@ -142,6 +168,30 @@ CREATE TABLE "OrderLine" (
     "lineTotalExVat" DECIMAL(10,2) NOT NULL,
 
     CONSTRAINT "OrderLine_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Batch" (
+    "id" TEXT NOT NULL,
+    "variantId" TEXT NOT NULL,
+    "batchNumber" TEXT NOT NULL,
+    "bestBefore" DATE NOT NULL,
+    "qtyReceived" INTEGER NOT NULL,
+    "qtyRemaining" INTEGER NOT NULL,
+    "note" TEXT,
+    "receivedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Batch_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrderLineBatch" (
+    "id" TEXT NOT NULL,
+    "orderLineId" TEXT NOT NULL,
+    "batchId" TEXT NOT NULL,
+    "qty" INTEGER NOT NULL,
+
+    CONSTRAINT "OrderLineBatch_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -176,6 +226,12 @@ CREATE UNIQUE INDEX "PriceListItem_priceListId_variantId_minQty_key" ON "PriceLi
 -- CreateIndex
 CREATE UNIQUE INDEX "Order_number_key" ON "Order"("number");
 
+-- CreateIndex
+CREATE INDEX "Batch_variantId_bestBefore_idx" ON "Batch"("variantId", "bestBefore");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Batch_variantId_batchNumber_key" ON "Batch"("variantId", "batchNumber");
+
 -- AddForeignKey
 ALTER TABLE "Company" ADD CONSTRAINT "Company_priceListId_fkey" FOREIGN KEY ("priceListId") REFERENCES "PriceList"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -199,3 +255,12 @@ ALTER TABLE "OrderLine" ADD CONSTRAINT "OrderLine_orderId_fkey" FOREIGN KEY ("or
 
 -- AddForeignKey
 ALTER TABLE "OrderLine" ADD CONSTRAINT "OrderLine_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Batch" ADD CONSTRAINT "Batch_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderLineBatch" ADD CONSTRAINT "OrderLineBatch_orderLineId_fkey" FOREIGN KEY ("orderLineId") REFERENCES "OrderLine"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderLineBatch" ADD CONSTRAINT "OrderLineBatch_batchId_fkey" FOREIGN KEY ("batchId") REFERENCES "Batch"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

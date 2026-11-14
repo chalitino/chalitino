@@ -3,8 +3,9 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
 import { requireActiveCustomer } from "../lib/auth.js";
 import { pickTier, resolvePriceListId } from "../lib/pricing.js";
+import { stockForVariants } from "../lib/stock.js";
 
-/** Catalogus met klantspecifieke prijzen (excl. btw). Alleen voor ingelogde, actieve dealers. */
+/** Catalogus met klantprijzen (excl. btw) en eigen B2B-voorraad. Alleen voor ingelogde, actieve dealers. */
 export async function catalogRoutes(app: FastifyInstance) {
   app.get("/catalog/products", { preHandler: requireActiveCustomer }, async (req) => {
     const q = z.object({ search: z.string().optional(), animal: z.string().optional() }).parse(req.query);
@@ -20,9 +21,10 @@ export async function catalogRoutes(app: FastifyInstance) {
       },
       orderBy: [{ animal: "asc" }, { title: "asc" }],
       include: {
-        variants: { include: { prices: priceListId ? { where: { priceListId }, orderBy: { minQty: "asc" } } : false } },
+        variants: { where: { b2bActive: true }, orderBy: [{ unitType: "asc" }, { title: "asc" }], include: { prices: priceListId ? { where: { priceListId }, orderBy: { minQty: "asc" } } : false } },
       },
     });
+    const stock = await stockForVariants(products.flatMap((p) => p.variants.map((v) => v.id)));
 
     return products.map((p) => ({
       id: p.id,
@@ -38,11 +40,13 @@ export async function catalogRoutes(app: FastifyInstance) {
           id: v.id,
           sku: v.sku,
           title: v.title,
+          unitType: v.unitType,
+          packContent: v.packContent,
           ean: v.ean,
           caseSize: v.caseSize,
           orderInCase: v.orderInCase,
-          stock: v.stock,
-          retailPrice: Number(v.retailPrice),
+          stock: stock.get(v.id) ?? 0,
+          retailPrice: v.retailPrice == null ? null : Number(v.retailPrice),
           vatRate: Number(v.vatRate),
           price: base?.price ?? null,
           tiers: (prices ?? []).map((t) => ({ minQty: t.minQty, price: Number(t.price) })),
@@ -61,15 +65,16 @@ export async function catalogRoutes(app: FastifyInstance) {
     const body = z.object({ skus: z.array(z.string()).min(1).max(100) }).parse(req.body);
     const priceListId = await resolvePriceListId(req.user.companyId);
     const variants = await prisma.productVariant.findMany({
-      where: { sku: { in: body.skus.map((s) => s.toUpperCase()) }, product: { b2bActive: true } },
+      where: { sku: { in: body.skus.map((s) => s.toUpperCase()) }, b2bActive: true, product: { b2bActive: true } },
       include: { product: true, prices: priceListId ? { where: { priceListId } } : false },
     });
+    const stock = await stockForVariants(variants.map((v) => v.id));
     return variants.map((v) => ({
       id: v.id,
       sku: v.sku,
-      title: v.product.title,
+      title: `${v.product.title} · ${v.title}`,
       caseSize: v.caseSize,
-      stock: v.stock,
+      stock: stock.get(v.id) ?? 0,
       price: pickTier(((v as any).prices ?? []) as any, 1)?.price ?? null,
     }));
   });

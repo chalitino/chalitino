@@ -1,4 +1,4 @@
-// Haalt producten + varianten + voorraad uit Shopify (Admin GraphQL API) en zet ze in onze database.
+// Haalt producten + varianten uit Shopify (GEEN voorraad: B2B heeft eigen voorraad via batches) (Admin GraphQL API) en zet ze in onze database.
 // Draai: pnpm --filter @wicotreats/api shopify:sync
 // Vereist SHOPIFY_STORE_DOMAIN en SHOPIFY_ADMIN_TOKEN (custom app met read_products, read_inventory).
 import "dotenv/config";
@@ -19,11 +19,23 @@ query Products($after: String) {
       id handle title descriptionHtml productType tags
       featuredMedia { preview { image { url } } }
       variants(first: 20) {
-        nodes { id sku title price barcode inventoryQuantity inventoryItem { measurement { weight { value unit } } } }
+        nodes { id sku title price barcode inventoryItem { measurement { weight { value unit } } } }
       }
     }
   }
 }`;
+
+// "Runderkophuid 250 g" → "250 g"; "Lamspootjes 3 stuks" → "3 st"
+function packContent(variantTitle: string, productTitle: string): string | null {
+  const src = variantTitle === "Default Title" ? productTitle : variantTitle;
+  const m = src.match(/(\d+)\s*(g|gram|kg|stuks|st)\b/i);
+  if (!m) return null;
+  const unit = m[2].toLowerCase().startsWith("st") ? "st" : m[2].toLowerCase() === "gram" ? "g" : m[2].toLowerCase();
+  return `${m[1]} ${unit}`;
+}
+function packTitle(variantTitle: string, productTitle: string) {
+  return packContent(variantTitle, productTitle) ?? (variantTitle === "Default Title" ? "Verpakking" : variantTitle);
+}
 
 const ANIMALS = ["Rund", "Kip", "Lam", "Eend", "Hert", "Varken", "Vis", "Kalkoen", "Konijn", "Paard", "Geit"];
 
@@ -52,8 +64,8 @@ async function run() {
         const grams = w ? Math.round(w.unit === "KILOGRAMS" ? w.value * 1000 : w.value) : null;
         await prisma.productVariant.upsert({
           where: { sku: v.sku },
-          update: { shopifyId: v.id, productId: product.id, title: v.title === "Default Title" ? "Standaard" : v.title, retailPrice: v.price, ean: v.barcode || undefined, stock: v.inventoryQuantity ?? 0, weightGrams: grams },
-          create: { shopifyId: v.id, productId: product.id, sku: v.sku, title: v.title === "Default Title" ? "Standaard" : v.title, retailPrice: v.price, ean: v.barcode || null, stock: v.inventoryQuantity ?? 0, weightGrams: grams },
+          update: { shopifyId: v.id, productId: product.id, retailPrice: v.price, ean: v.barcode || undefined, weightGrams: grams },
+          create: { shopifyId: v.id, productId: product.id, sku: v.sku, title: packTitle(v.title, p.title), unitType: "PACK", packContent: packContent(v.title, p.title), retailPrice: v.price, ean: v.barcode || null, weightGrams: grams },
         });
       }
       count++;

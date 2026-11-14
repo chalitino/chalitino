@@ -30,7 +30,7 @@ export async function authRoutes(app: FastifyInstance) {
 
   app.get("/auth/me", { preHandler: requireAuth }, async (req) => {
     const company = req.user.companyId
-      ? await prisma.company.findUnique({ where: { id: req.user.companyId }, select: { id: true, name: true, status: true, paymentTermDays: true } })
+      ? await prisma.company.findUnique({ where: { id: req.user.companyId }, select: { id: true, name: true, status: true, paymentTermDays: true, prepaidOrders: true, shipCountry: true, vatValidated: true } })
       : null;
     return { user: req.user, company };
   });
@@ -50,6 +50,10 @@ export async function authRoutes(app: FastifyInstance) {
         postcode: z.string().min(4),
         city: z.string().min(2),
         country: z.string().length(2).default("NL"),
+      })
+      .superRefine((v, ctx) => {
+        if (v.country.toUpperCase() !== "NL" && !v.vatNumber) ctx.addIssue({ code: "custom", path: ["vatNumber"], message: "Buiten Nederland is een btw-nummer verplicht" });
+        if (v.country.toUpperCase() === "NL" && !v.kvkNumber) ctx.addIssue({ code: "custom", path: ["kvkNumber"], message: "KvK-nummer is verplicht" });
       })
       .parse(req.body);
 

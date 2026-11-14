@@ -7,11 +7,11 @@ import { ZodError } from "zod";
 import { authRoutes, SESSION_COOKIE } from "./routes/auth.js";
 import { catalogRoutes } from "./routes/catalog.js";
 import { orderRoutes } from "./routes/orders.js";
-import { adminRoutes } from "./routes/admin.js";
+import { adminRoutes, staffRoutes } from "./routes/admin.js";
 
 const app = Fastify({ logger: true });
 
-await app.register(cors, { origin: process.env.WEB_ORIGIN ?? "http://localhost:3000", credentials: true });
+await app.register(cors, { origin: process.env.WEB_ORIGIN ?? "http://localhost:3000", credentials: true, methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] });
 await app.register(cookie);
 await app.register(jwt, {
   secret: process.env.JWT_SECRET ?? "dev-secret-change-me",
@@ -29,6 +29,7 @@ app.get("/health", async () => ({ ok: true, service: "wicotreats-b2b-api" }));
 await app.register(authRoutes);
 await app.register(catalogRoutes);
 await app.register(orderRoutes);
+await app.register(staffRoutes);
 await app.register(adminRoutes);
 
 const port = Number(process.env.API_PORT ?? 4000);

@@ -11,8 +11,30 @@ datasource db {
 }
 
 enum Role {
-  ADMIN
-  CUSTOMER
+  ADMIN    // WicoTreats beheer: alles
+  STAFF    // WicoTreats medewerker: orders, voorraad/batches
+  CUSTOMER // dealer
+}
+
+enum UnitType {
+  PACK // consumentenverpakking of kleinverpakking, bv. 100 g / 5 st
+  BULK // bulk, bv. 1 kg
+}
+
+enum VatScheme {
+  NL_VAT            // Nederlandse btw
+  EU_REVERSE_CHARGE // EU, geldig btw-nummer: btw verlegd
+  EXPORT            // buiten EU: 0%
+}
+
+enum PaymentTerms {
+  PREPAID    // vooruitbetalen (eerste orders)
+  ON_ACCOUNT // op rekening, binnen paymentTermDays
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
 }
 
 enum CompanyStatus {
@@ -38,6 +60,10 @@ model Company {
   phone           String?
   status          CompanyStatus @default(PENDING)
   paymentTermDays Int           @default(14)
+  prepaidOrders   Int           @default(2) // aantal eerste orders dat vooruitbetaald moet worden
+  vatValidated    Boolean       @default(false) // btw-nummer gecontroleerd via VIES
+  vatValidatedAt  DateTime?
+  vatCheckNote    String?
   // Adressen
   invoiceStreet   String?
   invoicePostcode String?
@@ -94,15 +120,19 @@ model ProductVariant {
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId   String
   sku         String   @unique
-  title       String // bv. "250 g"
+  title       String // bv. "250 g", "Bulk 1 kg", "5 stuks"
+  unitType    UnitType @default(PACK)
+  packContent String? // inhoud per eenheid, bv. "100 g", "5 st", "1 kg"
   ean         String?
   caseSize    Int      @default(1) // stuks per omdoos
   orderInCase Boolean  @default(false) // alleen per omdoos bestelbaar
-  retailPrice Decimal  @db.Decimal(10, 2) // consumentenadviesprijs incl. btw (uit Shopify)
+  retailPrice Decimal? @db.Decimal(10, 2) // consumentenadviesprijs incl. btw (uit Shopify), leeg voor bulk
   vatRate     Decimal  @default(9) @db.Decimal(5, 2) // diervoeding = 9% in NL
-  stock       Int      @default(0)
   weightGrams Int?
+  b2bActive   Boolean  @default(true)
 
+  // Voorraad is de som van batches.qtyRemaining (eigen B2B-voorraad, los van Shopify)
+  batches    Batch[]
   prices     PriceListItem[]
   orderLines OrderLine[]
 
@@ -142,6 +172,14 @@ model Order {
   reference   String? // klantreferentie / inkoopordernummer
   note        String?
   status      OrderStatus @default(RECEIVED)
+  vatScheme     VatScheme     @default(NL_VAT)
+  paymentTerms  PaymentTerms  @default(ON_ACCOUNT)
+  paymentStatus PaymentStatus @default(UNPAID)
+  paidAt        DateTime?
+  dueDate       DateTime?
+  trackingCode  String?
+  trackingUrl   String?
+  shippedAt     DateTime?
   subtotalExVat Decimal   @db.Decimal(10, 2)
   vatTotal      Decimal   @db.Decimal(10, 2)
   shippingExVat Decimal   @default(0) @db.Decimal(10, 2)
@@ -167,6 +205,34 @@ model OrderLine {
   unitPriceExVat Decimal     @db.Decimal(10, 2) // vastgelegd op moment van bestellen
   vatRate     Decimal        @db.Decimal(5, 2)
   lineTotalExVat Decimal     @db.Decimal(10, 2)
+  batches     OrderLineBatch[]
+}
+
+// Ontvangen partij met THT. Voorraad = som van qtyRemaining.
+model Batch {
+  id           String         @id @default(cuid())
+  variant      ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variantId    String
+  batchNumber  String
+  bestBefore   DateTime       @db.Date // THT
+  qtyReceived  Int
+  qtyRemaining Int
+  note         String?
+  receivedAt   DateTime       @default(now())
+  allocations  OrderLineBatch[]
+
+  @@unique([variantId, batchNumber])
+  @@index([variantId, bestBefore])
+}
+
+// Koppeling orderregel ↔ batch (FEFO: kortste THT eerst), voor traceerbaarheid.
+model OrderLineBatch {
+  id          String    @id @default(cuid())
+  orderLine   OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
+  orderLineId String
+  batch       Batch     @relation(fields: [batchId], references: [id])
+  batchId     String
+  qty         Int
 }
 
 model Setting {

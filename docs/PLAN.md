@@ -113,11 +113,22 @@ Zie `apps/api/prisma/schema.prisma`.
    Orderbevestiging per mail. Eerste testdealers uitnodigen.
 4. **Week 4 – live.** Hosting, domein, backups, monitoring. Daarna fase 2.
 
-## 7. Open vragen (beslissen vóór week 2)
+## 7. Beslissingen (14 nov 2026)
 
-1. Welke prijsgroepen zijn er nu feitelijk? (bijv. dealer / groothandel / key account)
-2. Verkoop je B2B per stuk of uitsluitend per omdoos? Hoeveel stuks per omdoos per product?
-3. Betalen dealers op rekening (14/30 dagen) of vooraf?
-4. Welk boekhoudpakket gebruik je (Exact, Moneybird, e-Boekhouden, anders)?
-5. Moet voorraad gedeeld worden tussen B2C (Shopify) en B2B, of krijgt B2B eigen voorraad?
-6. Verzenden via Sendcloud/MyParcel, of eigen bezorging?
+| # | Vraag | Besluit | Hoe gebouwd |
+|---|---|---|---|
+| 1 | Prijsgroepen | Eén prijslijst. Geen account = geen prijs. Prijzen excl. btw; btw bij afrekenen. NL: 9% btw. EU met geldig btw-nummer: btw verlegd. Buiten EU: 0%. Uitsluitend zakelijk. | `VatScheme` per order; `determineVatScheme()` o.b.v. afleverland + `Company.vatValidated`. VIES-check via `POST /admin/companies/:id/check-vat`, met handmatige goedkeuring als fallback. Buiten NL is btw-nummer verplicht bij aanvraag. |
+| 2 | Eenheden | B2B in bulk én per verpakking (bv. 5 st of 100 g). | `ProductVariant.unitType` (`PACK`/`BULK`) + `packContent`. Een product kan meerdere B2B-eenheden hebben met elk een eigen SKU, prijs en voorraad. Shopify-varianten komen binnen als `PACK`. |
+| 3 | Betaling | Eerste twee orders vooruitbetalen, daarna binnen 14 dagen. | `Company.prepaidOrders` (2) en `paymentTermDays` (14), per klant aanpasbaar. `Order.paymentTerms` wordt bij plaatsen bepaald op basis van het aantal betaalde orders. Verzenden van een vooruitbetaalde order is geblokkeerd tot `paymentStatus = PAID`. |
+| 4 | Boekhouding | Handmatig, op basis van bankbijschrift. | Medewerker klikt "Markeer als betaald" bij bijschrijving; `paidAt` wordt vastgelegd. Geen boekhoudkoppeling. Factuur-PDF volgt in fase 1b. |
+| 5 | Voorraad | Niet gedeeld met Shopify; B2B heeft eigen voorraad. | Voorraad = som van `Batch.qtyRemaining`. Shopify-sync haalt alleen producten/prijzen, geen voorraad. |
+| 6 | Verzending | Sendcloud. | Nu: trackingcode per order invoeren. Fase 2: Sendcloud-API koppelen (parcel aanmaken vanuit order, label printen, track & trace automatisch terug). |
+| 7 | Medewerker-login met THT/batch | Inkomende orders voor medewerkers; batch en THT automatisch gekoppeld. | Rol `STAFF`. Bij elke order wijst `allocateFefo()` batches toe met de kortste THT eerst (First Expired, First Out) en boekt voorraad af; annulering geeft terug. Beheerscherm toont per orderregel batch + THT (pakbon) en per batch welke orders hem kregen (traceerbaarheid, recall). |
+
+## 8. Volgende stappen
+
+1. Orderbevestiging en betaalinstructies per e-mail (Resend/Postmark).
+2. Factuur-PDF met correcte btw-tekst (verlegd / export) en vervaldatum.
+3. Sendcloud-koppeling: label + track & trace automatisch.
+4. Shopify-sync draaien voor alle 142 producten; B2B-eenheden (100 g, bulk) per product aanmaken en prijzen importeren via CSV.
+5. Hosting: web op Vercel, API + Postgres op Railway/Fly/Hetzner; domein `b2b.wicotreats.com`.

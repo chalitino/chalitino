@@ -15,8 +15,8 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true); setError(null);
     try {
-      await api("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
-      router.push("/");
+      const r = await api<{ user: { role: string } }>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+      router.push(r.user.role === "CUSTOMER" ? "/" : "/beheer");
     } catch (err) { setError((err as Error).message); } finally { setBusy(false); }
   }
 
