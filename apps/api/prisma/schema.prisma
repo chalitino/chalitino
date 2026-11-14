@@ -1,0 +1,175 @@
+// WicoTreats B2B — datamodel
+// Producten worden gesynct uit Shopify; klanten, prijslijsten en orders zijn eigen data.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum CompanyStatus {
+  PENDING   // aangevraagd, nog niet goedgekeurd
+  ACTIVE
+  BLOCKED
+}
+
+enum OrderStatus {
+  RECEIVED
+  PROCESSING
+  SHIPPED
+  INVOICED
+  CANCELLED
+}
+
+model Company {
+  id              String        @id @default(cuid())
+  name            String
+  kvkNumber       String?
+  vatNumber       String?
+  email           String
+  phone           String?
+  status          CompanyStatus @default(PENDING)
+  paymentTermDays Int           @default(14)
+  // Adressen
+  invoiceStreet   String?
+  invoicePostcode String?
+  invoiceCity     String?
+  invoiceCountry  String        @default("NL")
+  shipStreet      String?
+  shipPostcode    String?
+  shipCity        String?
+  shipCountry     String        @default("NL")
+
+  priceList   PriceList? @relation(fields: [priceListId], references: [id])
+  priceListId String?
+
+  users  User[]
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(CUSTOMER)
+  company      Company? @relation(fields: [companyId], references: [id])
+  companyId    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  shopifyId   String? @unique
+  handle      String  @unique
+  title       String
+  description String?
+  productType String? // bv. Hondensnack
+  animal      String? // bv. Rund, Kip, Lam, Eend, Hert
+  tags        String[]
+  imageUrl    String?
+  b2bActive   Boolean @default(true)
+
+  variants ProductVariant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductVariant {
+  id          String   @id @default(cuid())
+  shopifyId   String?  @unique
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  sku         String   @unique
+  title       String // bv. "250 g"
+  ean         String?
+  caseSize    Int      @default(1) // stuks per omdoos
+  orderInCase Boolean  @default(false) // alleen per omdoos bestelbaar
+  retailPrice Decimal  @db.Decimal(10, 2) // consumentenadviesprijs incl. btw (uit Shopify)
+  vatRate     Decimal  @default(9) @db.Decimal(5, 2) // diervoeding = 9% in NL
+  stock       Int      @default(0)
+  weightGrams Int?
+
+  prices     PriceListItem[]
+  orderLines OrderLine[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PriceList {
+  id        String          @id @default(cuid())
+  name      String          @unique // bv. Dealer, Groothandel
+  currency  String          @default("EUR")
+  isDefault Boolean         @default(false)
+  items     PriceListItem[]
+  companies Company[]
+  createdAt DateTime        @default(now())
+}
+
+// Prijs excl. btw per variant; meerdere regels met minQty geven staffels.
+model PriceListItem {
+  id          String         @id @default(cuid())
+  priceList   PriceList      @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  priceListId String
+  variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variantId   String
+  minQty      Int            @default(1)
+  price       Decimal        @db.Decimal(10, 2)
+
+  @@unique([priceListId, variantId, minQty])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  number      Int         @unique @default(autoincrement())
+  company     Company     @relation(fields: [companyId], references: [id])
+  companyId   String
+  placedById  String
+  reference   String? // klantreferentie / inkoopordernummer
+  note        String?
+  status      OrderStatus @default(RECEIVED)
+  subtotalExVat Decimal   @db.Decimal(10, 2)
+  vatTotal      Decimal   @db.Decimal(10, 2)
+  shippingExVat Decimal   @default(0) @db.Decimal(10, 2)
+  totalIncVat   Decimal   @db.Decimal(10, 2)
+  shipStreet    String?
+  shipPostcode  String?
+  shipCity      String?
+  shipCountry   String    @default("NL")
+  lines         OrderLine[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model OrderLine {
+  id          String         @id @default(cuid())
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  variantId   String
+  sku         String
+  title       String
+  qty         Int
+  unitPriceExVat Decimal     @db.Decimal(10, 2) // vastgelegd op moment van bestellen
+  vatRate     Decimal        @db.Decimal(5, 2)
+  lineTotalExVat Decimal     @db.Decimal(10, 2)
+}
+
+model Setting {
+  key   String @id
+  value String
+}
