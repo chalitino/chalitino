@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="wrap">
         <div className="grid grid-cols-[1fr_auto] items-center gap-6 border-b border-[#5a4a42] pb-7">
           <div>
-            <Wordmark height={34} className="text-wt-soft" />
+            <Wordmark height={34} className="text-[#F3E6CF]" />
             <div className="mt-3 flex flex-wrap gap-x-4 text-[10.5px] font-bold uppercase tracking-[0.14em] text-[#c9b9a6]">
               {brand.tagline.map((t, i) => <span key={t}>{i > 0 && <span className="mr-4 text-wt-gold">·</span>}{t}</span>)}
             </div>
@@ -28,7 +28,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="flex flex-col items-start justify-between gap-6 border-t border-[#5a4a42] pb-3 pt-8 md:flex-row md:items-end">
-          <Wordmark height={64} className="text-wt-soft" />
+          <Wordmark height={64} className="text-[#F3E6CF]" />
           <div className="font-display text-[clamp(20px,2.4vw,30px)] font-extrabold leading-tight text-wt-gold md:text-right">{brand.slogan}</div>
         </div>
         <div className="flex flex-wrap justify-between gap-2 border-t border-[#5a4a42] py-4 text-[10.5px] font-bold uppercase tracking-[0.1em] text-[#c9b9a6]">

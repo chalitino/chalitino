@@ -1,9 +1,17 @@
 // Huisstijl WicoTreats, overgenomen uit de Order Printer Pro-sjablonen (pakbon/factuur wicotreats.com).
+import logo from "./logo-paths.json" with { type: "json" };
+
+/** Liggend logo als inline SVG (voor documenten). */
+export const logoSvg = (fill: string, height = 30) =>
+  `<svg role="img" aria-label="WicoTreats" width="${Math.round((height * 12500) / 1480)}" height="${height}" viewBox="0 -1300 12500 1480" xmlns="http://www.w3.org/2000/svg"><path fill="${fill}" d="${logo.wico}"/><path fill="${fill}" transform="translate(5420 -60)" d="${logo.treats}"/></svg>`;
+export const LOGO_COLORS = logo.colors;
+
 export const brand = {
   companyName: "WicoTreats",
   legalName: "Wico Diervoeding V.O.F.",
   portalName: "WicoTreats B2B",
-  logoUrl: process.env.BRAND_LOGO_URL ?? "",
+  // E-mailclients tonen geen SVG: PNG van het liggende logo, gehost door de web-app (of eigen URL via BRAND_LOGO_URL).
+  logoUrl: process.env.BRAND_LOGO_URL ?? `${process.env.WEB_ORIGIN ?? "http://localhost:3000"}/brand/wicotreats-horizontal-bruun.png`,
   tagline: { nl: "Groothandel in natuurlijke hondensnacks · Swalmen (NL) · sinds 1993", en: "Wholesale natural dog snacks · Swalmen (NL) · since 1993" },
   slogan: { nl: "Met de hand ingepakt in Swalmen.", en: "Hand-packed in Swalmen." },
   sloganInvoice: "We have nothing to hide.",

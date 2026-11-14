@@ -154,6 +154,16 @@ CSV-download, voetnoot). Het woordmerk is de tekst-SVG uit `snippets/logo-woordm
 zelf zit niet in de export (Shopify-hosted) en kan later via `BRAND_LOGO_URL` worden toegevoegd. Diersoortkleuren
 staan in `apps/web/lib/brand.tsx` (in het thema een metaobject) en zijn aan te passen.
 
+## 8c. Logo's (14 nov 2026)
+
+Officiële logobestanden staan in `apps/web/public/brand/`: monogram (de W) in bruin-op-crème, bruin-op-kip en
+crème-op-bruin, het gestapelde logo "wico / treats" in bruin en crème, en een daaruit samengestelde liggende
+variant "wico treats" (SVG + PNG voor e-mail). Logokleuren: bruin `#3B2416`, crème `#F3E6CF`, kip `#F0B43A`.
+Letterpaden staan in `logo-paths.json` (web en api) en worden inline gebruikt in header, footer, pakbon en
+factuur; e-mails tonen de PNG via `BRAND_LOGO_URL` (standaard `<WEB_ORIGIN>/brand/wicotreats-horizontal-bruun.png`).
+Favicon en app-icoon: monogram op kip-geel. De definitieve kleurwaarden volgen uit het BRUUN-handboek;
+tot die tijd blijven de thema-tokens (`#4A3933`, `#FBF6EE`) leidend voor vlakken en tekst.
+
 ## 9. Volgende stappen
 
 1. E-mailprovider kiezen en instellen (Resend-account of SMTP van wicotreats.com); logo-URL invullen.

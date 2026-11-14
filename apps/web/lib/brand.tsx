@@ -1,4 +1,8 @@
-// Huisstijl-onderdelen uit het WicoTreats-thema: woordmerk, zegel, dierkleuren, kleurstrook, teksten.
+// Huisstijl-onderdelen uit het WicoTreats-thema: logo, zegel, dierkleuren, kleurstrook, teksten.
+import logo from "./logo-paths.json";
+
+export const LOGO_COLORS = logo.colors as { bruun: string; creme: string; kip: string };
+
 export const brand = {
   name: "WicoTreats",
   legalName: "Wico Diervoeding V.O.F.",
@@ -20,12 +24,32 @@ export const ANIMAL_COLORS: Record<string, string> = {
 };
 export const animalColor = (a: string | null | undefined) => (a && ANIMAL_COLORS[a]) || "#cbb89a";
 
-/** Woordmerk als tekst-SVG in Gluten, kleur via currentColor (zelfde als snippets/logo-woordmerk.liquid). */
+/** Liggend logo "wico treats" (officiële letterpaden), kleur via currentColor. */
 export function Wordmark({ className = "", height = 30 }: { className?: string; height?: number }) {
   return (
-    <svg className={className} role="img" aria-label="WicoTreats" width={Math.round(height * 1000 / 230)} height={height} viewBox="0 0 1000 230" xmlns="http://www.w3.org/2000/svg">
-      <text x="2" y="178" fill="currentColor" fontFamily="Gluten, 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif" fontWeight="800" fontSize="200" textLength="994" lengthAdjust="spacingAndGlyphs">WicoTreats</text>
+    <svg className={className} role="img" aria-label="WicoTreats" width={Math.round(height * 12500 / 1480)} height={height} viewBox="0 -1300 12500 1480" xmlns="http://www.w3.org/2000/svg">
+      <path fill="currentColor" d={logo.wico} />
+      <path fill="currentColor" transform="translate(5420 -60)" d={logo.treats} />
     </svg>
+  );
+}
+
+/** Gestapeld logo "wico / treats". */
+export function LogoStacked({ className = "", height = 80 }: { className?: string; height?: number }) {
+  return (
+    <svg className={className} role="img" aria-label="WicoTreats" width={Math.round(height * 5140 / 2413)} height={height} viewBox="21 -1278 5140 2413.2" xmlns="http://www.w3.org/2000/svg">
+      <path fill="currentColor" d={logo.wico} />
+      <path fill="currentColor" transform="translate(-1 1035.7) scale(0.7321)" d={logo.treats} />
+    </svg>
+  );
+}
+
+/** Monogram (de W), optioneel op een gekleurde cirkel. */
+export function Monogram({ size = 40, bg, fg = "currentColor" }: { size?: number; bg?: string; fg?: string }) {
+  return bg ? (
+    <svg width={size} height={size} viewBox="-748.9 -2162.4 3372.7 3372.7" aria-hidden="true"><circle cx="937.5" cy="-476" r="1686.4" fill={bg} /><path fill={fg} d={logo.monogram} /></svg>
+  ) : (
+    <svg width={size} height={Math.round(size * 1020 / 1875)} viewBox="0 -985 1875 1020" aria-hidden="true"><path fill={fg} d={logo.monogram} /></svg>
   );
 }
 

@@ -37,7 +37,7 @@ export default function Nav() {
       <div className="wrap">
         <div className="grid items-center gap-4 py-3.5 md:grid-cols-[auto_1fr_auto] md:gap-7">
           <Link href={isStaff ? "/beheer" : "/"} className="flex items-center gap-3 text-wt-ink" aria-label="WicoTreats — home">
-            <Wordmark height={30} />
+            <Wordmark height={28} className="text-[#3B2416]" />
             <small className="rounded-[2px] border border-wt-ink px-[7px] py-[5px] text-[9.5px] font-bold uppercase tracking-[0.14em]">{isStaff ? "Beheer" : "Zakelijk"}</small>
           </Link>
           {!publicPage && !isStaff && (

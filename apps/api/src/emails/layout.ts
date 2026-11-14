@@ -10,7 +10,7 @@ export function layout(opts: { lang: Lang; title: string; preheader?: string; bo
   const c = brand.colors;
   const f = brand.fonts;
   const header = brand.logoUrl
-    ? `<img src="${brand.logoUrl}" alt="${esc(brand.companyName)}" height="36" style="display:block;height:36px;">`
+    ? `<img src="${brand.logoUrl}" alt="${esc(brand.companyName)}" width="300" height="36" style="display:block;width:300px;height:36px;">`
     : `<span style="font-family:${f.display};font-weight:800;font-size:28px;line-height:1;color:${c.text};letter-spacing:-0.01em;">${esc(brand.companyName)}</span>`;
   const footer2 = opts.lang === "nl"
     ? `Aanvullend diervoeder voor honden · niet voor menselijke consumptie · KvK ${brand.kvk} · BTW ${brand.vat} · NVWA ${brand.nvwa}`

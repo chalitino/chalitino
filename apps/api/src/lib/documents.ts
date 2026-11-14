@@ -1,6 +1,6 @@
 // Pakbon en factuur als printbare HTML in de WicoTreats-huisstijl (1:1 naar de Order Printer Pro-sjablonen).
 // Tweetalig: NL voor NL/BE, EN voor de rest.
-import { brand, langFor, type Lang } from "./brand.js";
+import { brand, langFor, logoSvg, LOGO_COLORS, type Lang } from "./brand.js";
 import type { loadOrder } from "../emails/templates.js";
 import { esc, eur } from "../emails/layout.js";
 
@@ -88,7 +88,7 @@ export function pakbonHtml(o: Order) {
     return `<tr><td><span class="chk"></span></td><td><b>${esc(l.title)}</b>${cs && cs > 1 && l.qty % cs === 0 ? `<small>${l.qty / cs} ${t.cartons} ${cs} ${t.bags}</small>` : ""}</td><td class="mono">${esc(l.sku)}</td><td class="n"><b>${l.qty}</b></td><td>${lot}</td></tr>`;
   }).join("");
   return page(lang, `${t.doc} #${o.number}`, `
-  <div class="band"><div><div class="wm">WicoTreats</div><div class="lbl">${esc(brand.tagline[lang])}</div></div><div class="doc"><h1>${t.doc}</h1><div class="nr">#${o.number} · ${d(o.createdAt)}</div></div></div>${strook()}
+  <div class="band"><div>${logoSvg(LOGO_COLORS.bruun, 34)}<div class="lbl">${esc(brand.tagline[lang])}</div></div><div class="doc"><h1>${t.doc}</h1><div class="nr">#${o.number} · ${d(o.createdAt)}</div></div></div>${strook()}
   <div class="body">
     <div class="meta">
       <div><div class="lbl">${t.deliverto}</div>${addr(o)}</div>
@@ -124,7 +124,7 @@ export function factuurHtml(o: Order) {
     ? `<b>${t.paidtxt}${o.paidAt ? ` ${t.on} ${d(o.paidAt)}` : ""}.</b> ${t.keep}`
     : `<b>${t.payment}</b> ${t.please} ${eur(o.totalIncVat)} ${t.quoting} <span class="mono">${esc(nr)}</span>${o.reference ? ` / PO ${esc(o.reference)}` : ""}, ${t.within} (${termijn}).<br>IBAN <span class="mono">${brand.iban}</span> · BIC <span class="mono">${brand.bic}</span> · ${t.inname} ${brand.legalName}`;
   return page(lang, `${t.doc} ${nr}`, `
-  <div class="band"><div><div class="wm">WicoTreats</div><div class="lbl">${esc(brand.tagline[lang])}</div></div><div class="doc"><h1>${t.doc}${o.paymentStatus === "PAID" ? `<span class="tag">${t.paid}</span>` : o.status === "CANCELLED" ? `<span class="tag red">${t.cancelled}</span>` : ""}</h1><div class="nr">${esc(nr)} · ${d(invDate)}</div></div></div>${strook()}
+  <div class="band"><div>${logoSvg(LOGO_COLORS.bruun, 34)}<div class="lbl">${esc(brand.tagline[lang])}</div></div><div class="doc"><h1>${t.doc}${o.paymentStatus === "PAID" ? `<span class="tag">${t.paid}</span>` : o.status === "CANCELLED" ? `<span class="tag red">${t.cancelled}</span>` : ""}</h1><div class="nr">${esc(nr)} · ${d(invDate)}</div></div></div>${strook()}
   <div class="body">
     <div class="meta">
       <div><div class="lbl">${t.billto}</div>${invoiceAddr(o)}</div>
