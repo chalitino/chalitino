@@ -59,8 +59,8 @@ export default function OrderDetail() {
       </div>
       <h2 className="h2 mt-10 text-3xl">Adressen</h2>
       <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-[2px] border border-wt-line bg-white p-4 text-sm"><span className="pill mb-2 inline-block">Aflever</span><br />{o.shipStreet}<br />{o.shipPostcode} {o.shipCity}<br />{o.shipCountry}</div>
-        {o.trackingCode && <div className="rounded-[2px] border border-wt-line bg-white p-4 text-sm"><span className="pill ok mb-2 inline-block">{date(o.shippedAt)}</span><br />Sendcloud<br />{o.trackingUrl ? <a href={o.trackingUrl} className="mono underline" target="_blank" rel="noreferrer">{o.trackingCode}</a> : <span className="mono">{o.trackingCode}</span>}</div>}
+        <div className="rounded-[2px] border border-wt-line bg-wt-soft p-4 text-sm"><span className="pill mb-2 inline-block">Aflever</span><br />{o.shipStreet}<br />{o.shipPostcode} {o.shipCity}<br />{o.shipCountry}</div>
+        {o.trackingCode && <div className="rounded-[2px] border border-wt-line bg-wt-soft p-4 text-sm"><span className="pill ok mb-2 inline-block">{date(o.shippedAt)}</span><br />Sendcloud<br />{o.trackingUrl ? <a href={o.trackingUrl} className="mono underline" target="_blank" rel="noreferrer">{o.trackingCode}</a> : <span className="mono">{o.trackingCode}</span>}</div>}
       </div>
       {o.note && <><h2 className="h2 mt-10 text-3xl">Opmerking</h2><p className="lead mt-2">{o.note}</p></>}
     </div>

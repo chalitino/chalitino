@@ -29,9 +29,9 @@ export default function AssortimentPage() {
               <span className="t"><b>{a.animal}</b><span>{a.count} {a.count === 1 ? "product" : "producten"}</span></span>
             </Link>
           ))}
-          <Link href="/snelbestellen?eenheid=BULK" className="tile" style={{ "--c": "#2e221e" } as React.CSSProperties}>
-            <span className="wm">Bulk</span>
-            <span className="t"><b>Bulk per kg</b><span>{bulk} artikelen · ongelabeld</span></span>
+          <Link href="/snelbestellen?eenheid=BULK" className="tile !text-wt-bg" style={{ "--c": "#2c1a0f" } as React.CSSProperties}>
+            <span className="wm !text-wt-bg">Bulk</span>
+            <span className="t"><b className="!text-wt-bg">Bulk per kg</b><span>{bulk} artikelen · ongelabeld</span></span>
           </Link>
         </div>
       )}

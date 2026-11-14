@@ -32,7 +32,7 @@ export default function StockPage() {
       <h1 className="h1 text-4xl">Voorraad & batches</h1>
       <p className="text-sm text-wt-muted">Eigen B2B-voorraad, los van Shopify. Voorraad = som van de batches; orders pakken automatisch de kortste THT.</p>
 
-      <form onSubmit={receive} className="mt-6 grid gap-3 rounded-lg border border-wt-sand bg-white p-4 sm:grid-cols-5 text-sm">
+      <form onSubmit={receive} className="mt-6 grid gap-3 rounded-lg border border-wt-sand bg-wt-soft p-4 sm:grid-cols-5 text-sm">
         <h2 className="font-semibold sm:col-span-5">Batch inboeken</h2>
         <input required placeholder="SKU (bv. BRUUN001)" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} className="rounded border border-wt-sand px-3 py-2" />
         <input required placeholder="Batchnummer" value={form.batchNumber} onChange={(e) => setForm({ ...form, batchNumber: e.target.value })} className="rounded border border-wt-sand px-3 py-2" />
@@ -44,7 +44,7 @@ export default function StockPage() {
       </form>
 
       <input placeholder="Zoek product of SKU" value={search} onChange={(e) => setSearch(e.target.value)} className="mt-6 rounded border border-wt-sand px-3 py-2 text-sm" />
-      <div className="mt-3 overflow-x-auto rounded-lg border border-wt-sand bg-white">
+      <div className="mt-3 overflow-x-auto rounded-lg border border-wt-sand bg-wt-soft">
         <table className="w-full text-sm">
           <thead className="bg-wt-cream text-left text-xs uppercase text-wt-muted"><tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Eenheid</th><th className="px-4 py-3">SKU</th><th className="px-4 py-3">Voorraad</th><th className="px-4 py-3">Batches (THT)</th></tr></thead>
           <tbody>

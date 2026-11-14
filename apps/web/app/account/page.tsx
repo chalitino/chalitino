@@ -80,8 +80,8 @@ function AccountInner() {
         <>
           <h2 className="h2 mt-10 text-3xl">Adressen</h2>
           <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[2px] border border-wt-line bg-white p-4 text-sm"><span className="pill ok mb-2 inline-block">Aflever</span><br />{c.name}<br />{c.shipStreet}<br />{c.shipPostcode} {c.shipCity}<br />{c.shipCountry}</div>
-            <div className="rounded-[2px] border border-wt-line bg-white p-4 text-sm"><span className="pill mb-2 inline-block">Factuur</span><br />{c.name}<br />{c.invoiceStreet}<br />{c.invoicePostcode} {c.invoiceCity}<br />{c.invoiceCountry}<p className="mt-2 text-xs text-wt-mute">Adres wijzigen? Mail info@wicotreats.com.</p></div>
+            <div className="rounded-[2px] border border-wt-line bg-wt-soft p-4 text-sm"><span className="pill ok mb-2 inline-block">Aflever</span><br />{c.name}<br />{c.shipStreet}<br />{c.shipPostcode} {c.shipCity}<br />{c.shipCountry}</div>
+            <div className="rounded-[2px] border border-wt-line bg-wt-soft p-4 text-sm"><span className="pill mb-2 inline-block">Factuur</span><br />{c.name}<br />{c.invoiceStreet}<br />{c.invoicePostcode} {c.invoiceCity}<br />{c.invoiceCountry}<p className="mt-2 text-xs text-wt-mute">Adres wijzigen? Mail info@wicotreats.com.</p></div>
           </div>
         </>
       )}

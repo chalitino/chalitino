@@ -72,7 +72,7 @@ function QuickOrder() {
         <h1 className="h1">Het hele assortiment in <em>één tabel.</em></h1>
         <p className="lead mt-3.5">Per diersoort, per karton. Typ aantallen bij de artikelen die je nodig hebt en zet alles in één keer in je wagen. Voorraad is live.</p>
       </div>
-      <div className="sticky top-[108px] z-10 grid items-center gap-3.5 border-b border-wt-line bg-white/95 py-3 backdrop-blur md:grid-cols-[1fr_auto]">
+      <div className="sticky top-[108px] z-10 grid items-center gap-3.5 border-b border-wt-line bg-wt-soft/95 py-3 backdrop-blur md:grid-cols-[1fr_auto]">
         <label className="search max-w-[460px] !h-10 !border-wt-line"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter op product, artikelnummer, inhoud of batchnummer" /></label>
         <div className="flex flex-wrap items-center gap-3.5 text-[13px]">
           <label className="flex items-center gap-2"><input type="checkbox" checked={onlyStock} onChange={(e) => setOnlyStock(e.target.checked)} className="accent-wt-accent" /> alleen op voorraad</label>
@@ -93,7 +93,7 @@ function QuickOrder() {
                 const cartons = v.caseSize > 1 ? Math.round(n / v.caseSize) : n;
                 return (
                   <tr key={v.id} className={n > 0 ? "has" : ""}>
-                    <td><div className="flex min-w-[220px] items-center gap-2.5">{p.imageUrl ? <img src={p.imageUrl} alt="" className="h-10 w-10 flex-none rounded-[3px] border border-wt-line bg-white object-contain" /> : <span className="h-10 w-10 flex-none rounded-[3px] border border-wt-line bg-wt-soft" />}<span><b className="block font-semibold leading-tight">{p.title}</b><small className="mono text-[11px] text-wt-mute">{v.sku}</small></span></div></td>
+                    <td><div className="flex min-w-[220px] items-center gap-2.5">{p.imageUrl ? <img src={p.imageUrl} alt="" className="h-10 w-10 flex-none rounded-[3px] border border-wt-line bg-wt-soft object-contain" /> : <span className="h-10 w-10 flex-none rounded-[3px] border border-wt-line bg-wt-soft" />}<span><b className="block font-semibold leading-tight">{p.title}</b><small className="mono text-[11px] text-wt-mute">{v.sku}</small></span></div></td>
                     <td className="mono text-xs">{v.packContent ?? v.title}{v.caseSize > 1 && <><br /><span className="text-wt-mute">{v.caseSize} / karton</span></>}</td>
                     <td className="mono whitespace-nowrap text-xs text-wt-mute">{v.analysis ?? "—"}</td>
                     <td><span className={`stock ${st}`}><i />{st === "out" ? "nalevering ±2 wk" : st === "low" ? `${v.stock} st` : "op voorraad"}</span></td>
@@ -123,7 +123,7 @@ function QuickOrder() {
       <div className={`qo-bar ${lines.length ? "on" : ""}`}>
         <div className="wrap flex flex-wrap items-center justify-between gap-3 py-3.5">
           <div className="text-[13.5px]"><b className="mono">{lines.length}</b> regels · <b className="mono">{units}</b> eenheden · subtotaal <b className="mono">{eur(sum)}</b> ex BTW</div>
-          <div className="flex gap-2.5"><button className="btn ghost sm !border-white/50 !text-white" onClick={() => setQty({})}><span>Leegmaken</span></button><button className="btn gold sm" onClick={addAll}><span>Alles in de wagen</span><span>→</span></button></div>
+          <div className="flex gap-2.5"><button className="btn ghost sm !border-wt-bg/50 !text-wt-bg" onClick={() => setQty({})}><span>Leegmaken</span></button><button className="btn gold sm" onClick={addAll}><span>Alles in de wagen</span><span>→</span></button></div>
         </div>
       </div>
     </div>

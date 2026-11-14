@@ -15,14 +15,15 @@ export const brand = {
   registrations: "KvK 13033716 · NVWA 7346",
   payments: ["iDEAL", "Bancontact", "Overboeking", "Op rekening"],
   consumerSite: "https://bruunpets.com",
-  strip: ["#8b3a2a", "#4a3933", "#7a6a3e", "#b86f4a", "#c9a24a", "#3e6a8a", "#9a8a7a", "#5a4a3a", "#b08a5a", "#6a7a5a"],
+  // Dierenstrook: alle dieren als gelijke blokken, volgorde uit het merkhandboek
+  strip: ["#E0452C", "#F0B43A", "#D9824A", "#B5A58A", "#C4956A", "#A8A060", "#9DB88A", "#E8955A", "#A67C6D", "#C98BB0", "#D4B483", "#8FBCE6", "#8FA67A"],
 };
 
-/** Kleur per diersoort (zoals de diersoort-metaobjecten in het thema). Pas aan naar wens. */
+/** Dierkleuren uit het BRUUN merkhandboek (05 · Kleur). Tekst en logo op een dierkleur zijn altijd bruun. */
 export const ANIMAL_COLORS: Record<string, string> = {
-  Rund: "#8b3a2a", Kip: "#c9a24a", Lam: "#7a6a3e", Eend: "#3e6a8a", Hert: "#5a4a3a", Varken: "#b86f4a", Vis: "#6a7a5a", Kalkoen: "#b08a5a", Konijn: "#9a8a7a", Paard: "#4a3933", Geit: "#b8a07a", Kangoeroe: "#a8623a", Struisvogel: "#6e5a4e",
+  Rund: "#E0452C", Kip: "#F0B43A", Kalkoen: "#D9824A", Eend: "#B5A58A", Lam: "#C4956A", Geit: "#A8A060", Hert: "#9DB88A", Zwijn: "#E8955A", Paard: "#A67C6D", Konijn: "#C98BB0", Kameel: "#D4B483", Vis: "#8FBCE6", Supplementen: "#8FA67A",
 };
-export const animalColor = (a: string | null | undefined) => (a && ANIMAL_COLORS[a]) || "#cbb89a";
+export const animalColor = (a: string | null | undefined) => (a && ANIMAL_COLORS[a]) || "#D4B483";
 
 /** Liggend logo "wico treats" (officiële letterpaden), kleur via currentColor. */
 export function Wordmark({ className = "", height = 30 }: { className?: string; height?: number }) {

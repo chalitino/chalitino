@@ -39,7 +39,7 @@ const css = () => {
   .wt .ids{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;margin-top:18px;border:1px solid ${c.border};border-radius:2px;background:${c.cream}}
   .wt .ids>div{padding:8px 12px;border-left:1px solid ${c.border}}.wt .ids>div:first-child{border-left:0}
   .wt .ids .lbl{margin-bottom:2px}.wt .ids .v{font-family:${f.mono};font-size:11px;min-height:15px}
-  .wt .notes{margin-top:16px;border:1px solid ${c.border};border-radius:2px;padding:9px 12px;min-height:62px}
+  .wt .notes{margin-top:16px;border:1px solid ${c.border};border-radius:2px;padding:9px 12px;min-height:62px;background:${c.cream}}
   .wt .pay{margin-top:20px;border:1px solid ${c.border};border-left:5px solid ${c.accentSoft};padding:12px 14px;background:${c.cream};border-radius:2px}
   .wt .pay b{display:block;margin-bottom:3px}
   .wt .foot{margin-top:24px;padding-top:12px;border-top:1px solid ${c.border};display:flex;justify-content:space-between;align-items:center;gap:16px}

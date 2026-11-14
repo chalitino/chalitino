@@ -39,7 +39,7 @@ export default function StaffOrderDetail() {
 
         <h2 className="mt-6 font-semibold">Orderregels met batch en THT</h2>
         <p className="text-xs text-wt-muted">Batches zijn automatisch toegewezen volgens FEFO (kortste THT eerst). Dit is de pakbon.</p>
-        <table className="mt-2 w-full rounded-lg border border-wt-sand bg-white text-sm">
+        <table className="mt-2 w-full rounded-lg border border-wt-sand bg-wt-soft text-sm">
           <thead className="bg-wt-cream text-left text-xs uppercase text-wt-muted"><tr><th className="px-4 py-2">Artikel</th><th className="px-4 py-2">Aantal</th><th className="px-4 py-2">Batch</th><th className="px-4 py-2">THT</th><th className="px-4 py-2 text-right">Excl. btw</th></tr></thead>
           <tbody>
             {order.lines.map((l) => (
@@ -55,12 +55,12 @@ export default function StaffOrderDetail() {
         </table>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 text-sm">
-          <div className="rounded-lg border border-wt-sand bg-white p-4">
+          <div className="rounded-lg border border-wt-sand bg-wt-soft p-4">
             <h3 className="font-semibold">Afleveradres</h3>
             <p className="mt-1 text-wt-brown">{order.company?.name}<br />{order.shipStreet}<br />{order.shipPostcode} {order.shipCity}<br />{order.shipCountry}</p>
             <p className="mt-2 text-wt-muted">{order.company?.email}{order.company?.phone && <> · {order.company.phone}</>}</p>
           </div>
-          <div className="rounded-lg border border-wt-sand bg-white p-4">
+          <div className="rounded-lg border border-wt-sand bg-wt-soft p-4">
             <h3 className="font-semibold">Bedragen</h3>
             <dl className="mt-1 space-y-1 text-wt-brown">
               <div className="flex justify-between"><dt>Subtotaal excl. btw</dt><dd>{eur(order.subtotalExVat)}</dd></div>
@@ -74,7 +74,7 @@ export default function StaffOrderDetail() {
       </div>
 
       <aside className="h-fit space-y-4 text-sm">
-        <div className="rounded-lg border border-wt-sand bg-white p-4">
+        <div className="rounded-lg border border-wt-sand bg-wt-soft p-4">
           <h3 className="font-semibold">Documenten</h3>
           <div className="mt-2 flex gap-2">
             <a href={`${API}/admin/orders/${order.id}/pakbon`} target="_blank" rel="noreferrer" className="btn ghost sm flex-1">Pakbon</a>
@@ -83,7 +83,7 @@ export default function StaffOrderDetail() {
           {order.invoiceNumber && <p className="mt-2 text-xs text-wt-muted">Factuurnr <span className="font-mono">{order.invoiceNumber}</span></p>}
           <p className="mt-1 text-xs text-wt-muted">Opent in huisstijl; printen of opslaan als PDF. Taal volgt het land van de klant.</p>
         </div>
-        <div className="rounded-lg border border-wt-sand bg-white p-4">
+        <div className="rounded-lg border border-wt-sand bg-wt-soft p-4">
           <h3 className="font-semibold">Betaling</h3>
           <p className="mt-1 text-wt-brown">{PAYMENT_NL[order.paymentTerms]}{order.dueDate && <> · vervalt {date(order.dueDate)}</>}</p>
           <p className={`mt-1 font-medium ${order.paymentStatus === "PAID" ? "text-green-700" : "text-wt-rust"}`}>{order.paymentStatus === "PAID" ? `Betaald op ${date(order.paidAt)}` : "Nog niet betaald"}</p>
@@ -92,7 +92,7 @@ export default function StaffOrderDetail() {
             {order.paymentStatus === "PAID" ? "Markeer als onbetaald" : "Markeer als betaald (bank bijgeschreven)"}
           </button>
         </div>
-        <div className="rounded-lg border border-wt-sand bg-white p-4">
+        <div className="rounded-lg border border-wt-sand bg-wt-soft p-4">
           <h3 className="font-semibold">Verzending (Sendcloud)</h3>
           <label className="mt-2 block text-xs text-wt-muted">Track & trace-code
             <input value={tracking} onChange={(e) => setTracking(e.target.value)} className="mt-1 w-full rounded border border-wt-sand px-2 py-1" placeholder="3SABC…" />
@@ -100,7 +100,7 @@ export default function StaffOrderDetail() {
           <button onClick={() => patch({ trackingCode: tracking || null })} className="btn ghost sm block mt-2">Opslaan</button>
           {order.shippedAt && <p className="mt-2 text-xs text-wt-muted">Verzonden op {date(order.shippedAt)}</p>}
         </div>
-        <div className="rounded-lg border border-wt-sand bg-white p-4">
+        <div className="rounded-lg border border-wt-sand bg-wt-soft p-4">
           <h3 className="font-semibold">Status</h3>
           <div className="mt-2 space-y-2">
             {NEXT[order.status].map((n) => (

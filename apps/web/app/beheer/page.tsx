@@ -24,12 +24,12 @@ export default function StaffOrdersPage() {
       {dash && (
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[["Nieuw", dash.received], ["In behandeling", dash.processing], ["Wacht op vooruitbetaling", dash.awaitingPayment], ["Batches THT < 60 dagen", dash.batchesExpiringSoon]].map(([l, n]) => (
-            <div key={l as string} className="rounded-lg border border-wt-sand bg-white p-4"><div className="text-2xl font-semibold">{n}</div><div className="text-xs text-wt-muted">{l}</div></div>
+            <div key={l as string} className="rounded-lg border border-wt-sand bg-wt-soft p-4"><div className="text-2xl font-semibold">{n}</div><div className="text-xs text-wt-muted">{l}</div></div>
           ))}
         </div>
       )}
       {orders === null ? <p className="mt-6 text-wt-muted">Laden…</p> : orders.length === 0 ? <p className="mt-6 text-wt-muted">Geen orders.</p> : (
-        <div className="mt-6 overflow-x-auto rounded-lg border border-wt-sand bg-white">
+        <div className="mt-6 overflow-x-auto rounded-lg border border-wt-sand bg-wt-soft">
           <table className="w-full text-sm">
             <thead className="bg-wt-cream text-left text-xs uppercase text-wt-muted"><tr><th className="px-4 py-3">Order</th><th className="px-4 py-3">Datum</th><th className="px-4 py-3">Klant</th><th className="px-4 py-3">Land / btw</th><th className="px-4 py-3">Betaling</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Totaal</th></tr></thead>
             <tbody>

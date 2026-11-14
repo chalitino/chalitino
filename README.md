@@ -43,6 +43,7 @@ loggen in met wachtwoord via "Inloggen met wachtwoord".
 - **Betaling**: eerste twee orders vooruitbetalen, daarna op rekening (14 dagen). Medewerker markeert "betaald" bij bankbijschrift; vooruitbetaalde orders kunnen pas daarna op verzonden.
 - **Voorraad** is eigen B2B-voorraad, opgebouwd uit batches met THT. Een order koppelt automatisch batches volgens FEFO (kortste THT eerst); de pakbon toont batch + THT per regel.
 - **Verzending** via Sendcloud: nu trackingcode per order, API-koppeling volgt.
+- **Kleuren** uit het BRUUN-merkhandboek (bruun `#3B2416`, crème `#F3E6CF`, crème-diep `#EAD9BA`, rund-inkt `#B8321C`, kip `#F0B43A` en dertien dierkleuren); geen wit, geen zwart, geen verlopen.
 - **Huisstijl en pagina-opbouw** uit het WicoTreats Shopify-thema (`b2b-wico.css`, B2B-secties): woordmerk, zoekbalk "artikelnummer, product of batchnummer", diersoort-tegels, snelbestellen per diersoort met vaste balk, accountoverzicht, donkere footer met zegel en "We have nothing to hide.". Zelfde stijl in e-mails, pakbon en factuur. Taal: NL voor NL/BE, EN daarbuiten.
 - **Inloggen met e-mailcode** voor dealers (zoals het thema): geen wachtwoord, eenmalige code van 6 cijfers, 10 minuten geldig. Aanvraagformulier met bedrijfstype, website en "hoe ken je ons".
 - **Traceerbaarheid voor de klant**: zoeken op batchnummer in de orderhistorie; partij en THT per orderregel.

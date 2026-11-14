@@ -161,8 +161,26 @@ crème-op-bruin, het gestapelde logo "wico / treats" in bruin en crème, en een 
 variant "wico treats" (SVG + PNG voor e-mail). Logokleuren: bruin `#3B2416`, crème `#F3E6CF`, kip `#F0B43A`.
 Letterpaden staan in `logo-paths.json` (web en api) en worden inline gebruikt in header, footer, pakbon en
 factuur; e-mails tonen de PNG via `BRAND_LOGO_URL` (standaard `<WEB_ORIGIN>/brand/wicotreats-horizontal-bruun.png`).
-Favicon en app-icoon: monogram op kip-geel. De definitieve kleurwaarden volgen uit het BRUUN-handboek;
-tot die tijd blijven de thema-tokens (`#4A3933`, `#FBF6EE`) leidend voor vlakken en tekst.
+Favicon en app-icoon: monogram op kip-geel.
+
+## 8d. Kleuren uit het BRUUN-merkhandboek (05 · Kleur, 14 nov 2026)
+
+| Naam | Hex | Gebruik |
+|---|---|---|
+| Bruun | `#3B2416` | tekst, logo, knoppen, footer |
+| Crème | `#F3E6CF` | achtergrond, invoervelden |
+| Crème-diep | `#EAD9BA` | vlakken: kaarten, tabelkoppen, header, meldingen |
+| Bruun-diep | `#2C1A0F` | hover, bulk-tegel |
+| Rund-inkt | `#B8321C` | alleen tekst op crème: accentwoorden in koppen, links, "slecht"-status |
+| Kip | `#F0B43A` | gouden knop "Alles in de wagen", waarschuwing |
+
+Dierkleuren (tegels, snelbestel-groepen, dierenstrook in deze volgorde): Rund `#E0452C`, Kip `#F0B43A`,
+Kalkoen `#D9824A`, Eend `#B5A58A`, Lam `#C4956A`, Geit `#A8A060`, Hert `#9DB88A`, Zwijn `#E8955A`,
+Paard `#A67C6D`, Konijn `#C98BB0`, Kameel `#D4B483`, Vis `#8FBCE6`, Supplementen `#8FA67A`.
+
+Regels die zijn doorgevoerd: tekst en logo op een dierkleur altijd bruun; kleine tekst op een dierkleur staat op
+een crème chip; geen verlopen, geen zwart, geen wit (documenten worden op wit papier geprint, de band en vlakken
+zijn crème). Tokens: `apps/web/app/globals.css`, `apps/web/lib/brand.tsx`, `apps/api/src/lib/brand.ts`.
 
 ## 9. Volgende stappen
 

@@ -27,7 +27,7 @@ export default function CustomersPage() {
       {msg && <p className="mt-3 rounded bg-wt-cream px-3 py-2 text-sm">{msg}</p>}
       <div className="mt-6 space-y-3">
         {(rows ?? []).map((c) => (
-          <div key={c.id} className="rounded-lg border border-wt-sand bg-white p-4 text-sm">
+          <div key={c.id} className="rounded-lg border border-wt-sand bg-wt-soft p-4 text-sm">
             <div className="flex flex-wrap items-center gap-3">
               <span className="font-semibold">{c.name}</span>
               <span className={`rounded-full px-2 py-0.5 text-xs ${c.status === "ACTIVE" ? "bg-emerald-50 text-green-800" : c.status === "PENDING" ? "bg-wt-honey/30 text-wt-rust" : "bg-red-50 text-red-700"}`}>{STATUS[c.status]}</span>

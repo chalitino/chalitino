@@ -25,16 +25,20 @@ export const brand = {
   bic: "INGBNL2A",
   termsUrl: "wicotreats.com/pages/handelsvoorwaarden",
   footerLine1: "Wico Diervoeding V.O.F. · Maalbroekweg 1B · 6071 NS Swalmen · info@wicotreats.com · 06 13148616",
+  // BRUUN merkhandboek · 05 Kleur
   colors: {
-    text: "#4A3933", // warm bruin
-    muted: "#7A6A60",
-    border: "#E3D6C2",
-    cream: "#FBF6EE",
-    surface: "#ffffff",
-    accent: "#9A5B2E", // roest
-    accentSoft: "#EAC88E",
+    text: "#3B2416", // bruun
+    ink2: "#2C1A0F", // bruun-diep
+    muted: "#7B6554",
+    border: "#D2C3AE",
+    cream: "#F3E6CF", // crème
+    creamDeep: "#EAD9BA", // crème-diep: vlakken
+    surface: "#F3E6CF",
+    accent: "#B8321C", // rund-inkt: tekst op crème
+    accentSoft: "#F0B43A", // kip
     red: "#B8321C",
-    strip: ["#8b3a2a", "#4a3933", "#7a6a3e", "#b86f4a", "#c9a24a", "#3e6a8a", "#9a8a7a", "#5a4a3a", "#b08a5a", "#6a7a5a"],
+    // Dierenstrook in handboekvolgorde: rund, kip, kalkoen, eend, lam, geit, hert, zwijn, paard, konijn, kameel, vis, supplementen
+    strip: ["#E0452C", "#F0B43A", "#D9824A", "#B5A58A", "#C4956A", "#A8A060", "#9DB88A", "#E8955A", "#A67C6D", "#C98BB0", "#D4B483", "#8FBCE6", "#8FA67A"],
   },
   fonts: {
     display: "Gluten, 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif",

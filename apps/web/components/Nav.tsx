@@ -33,7 +33,7 @@ export default function Nav() {
     : [["/", "Assortiment"], ["/snelbestellen", "Snelbestellen"], ["/snelbestellen?eenheid=BULK", "Bulk per kg"], ["/account", "Mijn account"]];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-wt-line bg-wt-bg/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-wt-line bg-wt-soft/95 backdrop-blur">
       <div className="wrap">
         <div className="grid items-center gap-4 py-3.5 md:grid-cols-[auto_1fr_auto] md:gap-7">
           <Link href={isStaff ? "/beheer" : "/"} className="flex items-center gap-3 text-wt-ink" aria-label="WicoTreats — home">

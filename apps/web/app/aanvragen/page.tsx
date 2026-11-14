@@ -34,7 +34,7 @@ export default function RegisterPage() {
         <div>
           <div className="mb-7 grid gap-2.5 sm:grid-cols-3">
             {[["1 · Aanvragen", "Twee minuten: bedrijfsgegevens en contactpersoon. Geen wachtwoord nodig."], ["2 · Beoordeling", "We controleren KvK en BTW-nummer. Binnen één werkdag bericht per e-mail."], ["3 · Inloggen en bestellen", "Je logt in met je e-mailadres en een eenmalige code. Netto-prijzen zichtbaar, snelbestellen open."]].map(([t, d], i) => (
-              <div key={t} className={`rounded-[2px] border p-3.5 text-[13px] ${i === 0 ? "border-wt-ink bg-white" : "border-wt-line bg-wt-bg text-wt-mute"}`}><b className="mb-1 block font-display text-[15px] text-wt-ink">{t}</b>{d}</div>
+              <div key={t} className={`rounded-[2px] border p-3.5 text-[13px] ${i === 0 ? "border-wt-ink bg-wt-soft" : "border-wt-line bg-wt-bg text-wt-mute"}`}><b className="mb-1 block font-display text-[15px] text-wt-ink">{t}</b>{d}</div>
             ))}
           </div>
           {done ? <div className="notice ok"><b>Aanvraag ontvangen.</b><br />{done} Daarna log je in met dat e-mailadres (je ontvangt een eenmalige code, geen wachtwoord nodig) en zie je direct netto-prijzen.</div> : (
